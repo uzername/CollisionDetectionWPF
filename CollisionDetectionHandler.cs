@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Numerics;
 using BepuPhysics;
 using BepuPhysics.Collidables;
@@ -11,12 +12,13 @@ namespace WpfCollision
 {
     public class CollisionDetectionHandler
     {
-        static void Main()
+       public static void SimulationSimple()
         {
             var pool = new BufferPool();
             var simulation = Simulation.Create(pool, new NarrowPhaseCallbacks(), new PoseIntegratorCallbacks(), new SolveDescription(1, 1));
 
             // === 1. Create a static mesh collider ===
+            /*
             var triangleVertices = new[]
             {
             new Vector3(-2, 0, -1),
@@ -41,6 +43,16 @@ namespace WpfCollision
             var meshShapeIndex = simulation.Shapes.Add(mesh);
 
             simulation.Statics.Add(new StaticDescription(new Vector3(0, 0, 0), meshShapeIndex));
+            */
+
+            var boxShape = new Box(4f, 1f, 1f); // Axis-aligned box: 4 wide, 1 tall, 1 deep
+            var boxShapeIndex = simulation.Shapes.Add(boxShape);
+
+            var staticDescription = new StaticDescription(
+                new Vector3(0, 0, 0), // Center of the box
+                boxShapeIndex
+            );
+            simulation.Statics.Add(staticDescription);
 
             // === 2. Create a kinematic cylinder ===
             var cylinder = new Cylinder(0.5f, 2f);
@@ -61,9 +73,10 @@ namespace WpfCollision
             for (int step = 0; step < 60; step++)
             {
                 float y = 2f - step * 0.05f;
-                // tell AI
+                // what may it be
                 var body = simulation.Bodies.GetBodyReference(cylinderHandle);
                 body.Pose.Position = new Vector3(0, y, 0);
+                body.Velocity.Linear = new Vector3(0, -3f, 0); //Must have non-zero velocity to trigger contacts!
 
                 simulation.Timestep(1f / 60f);
             }
@@ -121,8 +134,7 @@ namespace WpfCollision
             {
                 if (manifold.Count > 0)
                 {
-                    // todo - tell AI about BodyHandle
-                    Console.WriteLine($"Collision between {pair.A.BodyHandle} and {pair.B.BodyHandle    } with {manifold.Count} contact(s).");
+                    Debug.WriteLine($"Collision between {pair.A.BodyHandle} and {pair.B.BodyHandle    } with {manifold.Count} contact(s).");
                 }
 
                 material = new PairMaterialProperties
@@ -145,7 +157,7 @@ namespace WpfCollision
 
             public bool ConfigureContactManifold(int workerIndex, CollidablePair pair, int childIndexA, int childIndexB, ref ConvexContactManifold manifold)
             {
-                // I leave it empty by now - todo ask AI
+                // I leave it empty by now - what does it do?
                 return true;
             }
         }

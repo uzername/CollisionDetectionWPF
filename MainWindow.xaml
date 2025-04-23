@@ -19,7 +19,7 @@
 
         </Grid.RowDefinitions>
         <StackPanel Orientation="Horizontal" Grid.Row="0" Grid.Column="0">
-            <Button Content="Start Collision detection" Margin="2"/>
+            <Button Content="Start Collision detection" Margin="2" Name="ButtonSimulate" Click="ButtonSimulate_Click"/>
         </StackPanel>
         <Label HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Grid.Column="0" Grid.Row="1">Here will be a 3D control</Label>
         <GridSplitter Grid.Column="0" Height="5" Grid.Row="2" HorizontalAlignment="Stretch" VerticalAlignment="Center"></GridSplitter>

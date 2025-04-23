@@ -20,5 +20,11 @@ namespace WpfCollision
         {
             InitializeComponent();
         }
+
+        private void ButtonSimulate_Click(object sender, RoutedEventArgs e)
+        {
+            CollisionDetectionHandler.SimulationSimple();
+            //SimpleSelfContainedDemo.Run();
+        }
     }
 }
