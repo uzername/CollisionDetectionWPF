@@ -23,6 +23,6 @@
         </StackPanel>
         <Label HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Grid.Column="0" Grid.Row="1">Here will be a 3D control</Label>
         <GridSplitter Grid.Column="0" Height="5" Grid.Row="2" HorizontalAlignment="Stretch" VerticalAlignment="Center"></GridSplitter>
-        <TextBox Name="TextBoxLog" FontFamily="Lucida Console" VerticalScrollBarVisibility="Auto" Grid.Row="3" Grid.Column="0"></TextBox>
+        <TextBox Name="TextBoxLog" FontFamily="Lucida Console" AcceptsReturn="True" TextWrapping="Wrap" DataContext="{Binding Path=TextboxDatasource}" Text="{Binding Path=TextLog}" VerticalScrollBarVisibility="Auto" Grid.Row="3" Grid.Column="0"></TextBox>
     </Grid>
 </Window>

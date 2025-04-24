@@ -8,6 +8,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using WpfCollision.ViewModel;
 
 namespace WpfCollision
 {
@@ -19,12 +20,20 @@ namespace WpfCollision
         public MainWindow()
         {
             InitializeComponent();
+            this.DataContext = new MainWindowVM();
         }
 
         private void ButtonSimulate_Click(object sender, RoutedEventArgs e)
         {
-            CollisionDetectionHandler.SimulationSimple();
+            CollisionDetectionHandler currentHandler = new CollisionDetectionHandler();
+            currentHandler.OnCollisionRegistered += CurrentHandler_OnCollisionRegistered;
+            currentHandler.SimulationSimple();
             //SimpleSelfContainedDemo.Run();
+        }
+
+        private void CurrentHandler_OnCollisionRegistered(string parameter)
+        {
+            ((this.DataContext) as MainWindowVM).TextboxDatasource.AppendLine(parameter);
         }
     }
 }

@@ -10,13 +10,26 @@ using BepuUtilities.Memory;
 
 namespace WpfCollision
 {
+    public delegate void CollisionRegisteredDelegate(string parameter);
+    /// <summary>
+    /// collision detection happens here. Similar to https://github.com/bepu/bepuphysics2/blob/master/Demos/Demos/SimpleSelfContainedDemo.cs
+    /// </summary>
     public class CollisionDetectionHandler
     {
-       public static void SimulationSimple()
+       public event CollisionRegisteredDelegate OnCollisionRegistered;
+        private Simulation simulation;
+        private BufferPool pool;
+        private NarrowPhaseCallbacks narrowPhaseCallbacks;
+       public void SimulationSimple()
         {
-            var pool = new BufferPool();
-            var simulation = Simulation.Create(pool, new NarrowPhaseCallbacks(), new PoseIntegratorCallbacks(), new SolveDescription(1, 1));
-
+            pool = new BufferPool();
+            narrowPhaseCallbacks = new NarrowPhaseCallbacks();
+            if (OnCollisionRegistered!=null)
+            {
+                narrowPhaseCallbacks.OnCollisionRegistered += this.OnCollisionRegistered;
+            }
+            simulation = Simulation.Create(pool, narrowPhaseCallbacks, new PoseIntegratorCallbacks(), new SolveDescription(1, 1));
+            OnCollisionRegistered?.Invoke($"[{DateTime.Now}] simulation initialized");
             // === 1. Create a static mesh collider ===
             /*
             var triangleVertices = new[]
@@ -53,7 +66,7 @@ namespace WpfCollision
                 boxShapeIndex
             );
             simulation.Statics.Add(staticDescription);
-
+            OnCollisionRegistered?.Invoke($"[{DateTime.Now}] Static box created");
             // === 2. Create a kinematic cylinder ===
             var cylinder = new Cylinder(0.5f, 2f);
             var cylinderShapeIndex = simulation.Shapes.Add(cylinder);
@@ -62,25 +75,26 @@ namespace WpfCollision
                 new Vector3(0, 2f, 0),
                 Quaternion.CreateFromAxisAngle(Vector3.UnitX, MathF.PI / 4)
             );
-
+            // You could also force the kinematic to always be awake by settings its sleeping velocity threshold to a negative value in BodyActivityDescription.
             var cylinderHandle = simulation.Bodies.Add(BodyDescription.CreateKinematic(
                 pose,
                 new CollidableDescription(cylinderShapeIndex, 0.1f),
-                new BodyActivityDescription()
+                new BodyActivityDescription(-1)
             ));
-
+            OnCollisionRegistered?.Invoke($"[{DateTime.Now}] Kinematics cylinder created");
             // === 3. Step the simulation while moving the cylinder downward ===
+            OnCollisionRegistered?.Invoke($"[{DateTime.Now}] Stepping over simulation");
             for (int step = 0; step < 60; step++)
             {
                 float y = 2f - step * 0.05f;
                 // what may it be
                 var body = simulation.Bodies.GetBodyReference(cylinderHandle);
                 body.Pose.Position = new Vector3(0, y, 0);
-                body.Velocity.Linear = new Vector3(0, -3f, 0); //Must have non-zero velocity to trigger contacts!
+                //body.Velocity.Linear = new Vector3(0, -3f, 0); //Must have non-zero velocity to trigger contacts!
 
                 simulation.Timestep(1f / 60f);
             }
-
+            OnCollisionRegistered?.Invoke($"[{DateTime.Now}] Simulation complete");
             simulation.Dispose();
             pool.Clear();
         }
@@ -111,6 +125,7 @@ namespace WpfCollision
 
         struct NarrowPhaseCallbacks : INarrowPhaseCallbacks
         {
+            public event CollisionRegisteredDelegate OnCollisionRegistered;
             public void Initialize(Simulation simulation) { }
 
             public void Dispose() { }
@@ -134,7 +149,8 @@ namespace WpfCollision
             {
                 if (manifold.Count > 0)
                 {
-                    Debug.WriteLine($"Collision between {pair.A.BodyHandle} and {pair.B.BodyHandle    } with {manifold.Count} contact(s).");
+                    //Debug.WriteLine($"Collision between two bodies with {manifold.Count} contact(s).");
+                    OnCollisionRegistered?.Invoke($"[{DateTime.Now}]Collision between two bodies with {manifold.Count} contact(s).");
                 }
 
                 material = new PairMaterialProperties
