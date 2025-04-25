@@ -21,7 +21,7 @@
         <StackPanel Orientation="Horizontal" Grid.Row="0" Grid.Column="0">
             <Button Content="Start Collision detection" Margin="2" Name="ButtonSimulate" Click="ButtonSimulate_Click"/>
         </StackPanel>
-        <Label HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Grid.Column="0" Grid.Row="1">Here will be a 3D control</Label>
+        <local:CollisionTestRenderer Grid.Column="0" Grid.Row="1"></local:CollisionTestRenderer>
         <GridSplitter Grid.Column="0" Height="5" Grid.Row="2" HorizontalAlignment="Stretch" VerticalAlignment="Center"></GridSplitter>
         <TextBox Name="TextBoxLog" FontFamily="Lucida Console" AcceptsReturn="True" TextWrapping="Wrap" DataContext="{Binding Path=TextboxDatasource}" Text="{Binding Path=TextLog}" VerticalScrollBarVisibility="Auto" Grid.Row="3" Grid.Column="0"></TextBox>
     </Grid>
