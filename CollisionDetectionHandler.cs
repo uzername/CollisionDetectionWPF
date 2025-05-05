@@ -19,6 +19,7 @@ namespace WpfCollision
        public event CollisionRegisteredDelegate OnCollisionRegistered;
         private Simulation simulation;
         private BufferPool pool;
+        private BodyHandle cylinderHandle;
         private NarrowPhaseCallbacks narrowPhaseCallbacks;
        public void SimulationSimple()
         {
@@ -68,20 +69,7 @@ namespace WpfCollision
             simulation.Statics.Add(staticDescription);
             OnCollisionRegistered?.Invoke($"[{DateTime.Now}] Static box created");
             // === 2. Create a kinematic cylinder ===
-            var cylinder = new Cylinder(0.5f, 2f);
-            var cylinderShapeIndex = simulation.Shapes.Add(cylinder);
-
-            var pose = new RigidPose(
-                new Vector3(0, 2f, 0),
-                Quaternion.CreateFromAxisAngle(Vector3.UnitX, MathF.PI / 4)
-            );
-            // You could also force the kinematic to always be awake by settings its sleeping velocity threshold to a negative value in BodyActivityDescription.
-            var cylinderHandle = simulation.Bodies.Add(BodyDescription.CreateKinematic(
-                pose,
-                new CollidableDescription(cylinderShapeIndex, 0.1f),
-                new BodyActivityDescription(-1)
-            ));
-            OnCollisionRegistered?.Invoke($"[{DateTime.Now}] Kinematics cylinder created");
+            InitCylindricShape();
             // === 3. Step the simulation while moving the cylinder downward ===
             OnCollisionRegistered?.Invoke($"[{DateTime.Now}] Stepping over simulation");
             for (int step = 0; step < 60; step++)
@@ -94,11 +82,44 @@ namespace WpfCollision
 
                 simulation.Timestep(1f / 60f);
             }
+            finalizeSimulation();
+        }
+        private void finalizeSimulation()
+        {
             OnCollisionRegistered?.Invoke($"[{DateTime.Now}] Simulation complete");
             simulation.Dispose();
             pool.Clear();
         }
+        /// <summary>
+        /// create kynematic shape of cylindric for collision simulation
+        /// </summary>
+        public void InitCylindricShape()
+        {
+            var cylinder = new Cylinder(0.5f, 2f);
+            var cylinderShapeIndex = simulation.Shapes.Add(cylinder);
 
+            var pose = new RigidPose(
+                new Vector3(0, 0f, 0)
+                /*Quaternion.CreateFromAxisAngle(Vector3.UnitX, MathF.PI / 4)*/
+            );
+            // You could also force the kinematic to always be awake by settings its sleeping velocity threshold to a negative value in BodyActivityDescription.
+            cylinderHandle = simulation.Bodies.Add(BodyDescription.CreateKinematic(
+                pose,
+                new CollidableDescription(cylinderShapeIndex, 0.1f),
+                new BodyActivityDescription(-1)
+            ));
+            OnCollisionRegistered?.Invoke($"[{DateTime.Now}] Kinematics cylinder created");
+        }
+        /// <summary>
+        /// should be called after InitCylindricShape. for consistency reason should not be called when movement is running (nothing bad happen but still)
+        /// </summary>
+        public void SetInitialCylindricCoordinates(float rotationXAngleRAD, float rotationYAngleRAD, float rotationZAngleRAD, float XPosition, float YPosition, float ZPosition)
+        {
+            var body = simulation.Bodies.GetBodyReference(cylinderHandle);
+            body.Pose.Position = new Vector3(XPosition, YPosition, ZPosition);
+            // https://simple.wikipedia.org/wiki/Pitch,_yaw,_and_roll#/media/File:6DOF_en.jpg
+            body.Pose.Orientation = Quaternion.CreateFromYawPitchRoll(rotationZAngleRAD, rotationYAngleRAD, rotationXAngleRAD);
+        }
         struct PoseIntegratorCallbacks : IPoseIntegratorCallbacks
         {
             public AngularIntegrationMode AngularIntegrationMode => AngularIntegrationMode.Nonconserving;
@@ -122,7 +143,9 @@ namespace WpfCollision
                 // No velocity integration; we're controlling the kinematic manually
             }
         }
-
+        /// <summary>
+        /// collision detection has 2 phases. Broad phase detects pairs of probable candidates for collision, narrow phase detects whether those pairs of elements may collide
+        /// </summary>
         struct NarrowPhaseCallbacks : INarrowPhaseCallbacks
         {
             public event CollisionRegisteredDelegate OnCollisionRegistered;
@@ -139,7 +162,15 @@ namespace WpfCollision
             {
                 return true;
             }
-
+            /// <summary>
+            /// this is where collision detected and processed
+            /// </summary>
+            /// <typeparam name="TManifold"></typeparam>
+            /// <param name="workerIndex"></param>
+            /// <param name="pair"></param>
+            /// <param name="manifold"></param>
+            /// <param name="material"></param>
+            /// <returns></returns>
             public bool ConfigureContactManifold<TManifold>(
                 int workerIndex,
                 CollidablePair pair,
