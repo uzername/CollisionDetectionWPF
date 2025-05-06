@@ -13,6 +13,7 @@ namespace WpfCollision
     public delegate void CollisionRegisteredDelegate(string parameter);
     /// <summary>
     /// collision detection happens here. Similar to https://github.com/bepu/bepuphysics2/blob/master/Demos/Demos/SimpleSelfContainedDemo.cs
+    /// seems like physics engine has Y axis going to top
     /// </summary>
     public class CollisionDetectionHandler
     {
@@ -59,7 +60,36 @@ namespace WpfCollision
             simulation.Statics.Add(new StaticDescription(new Vector3(0, 0, 0), meshShapeIndex));
             */
 
-            var boxShape = new Box(4f, 1f, 1f); // Axis-aligned box: 4 wide, 1 tall, 1 deep
+            InitStaticBoxShape(4f, 1f, 1f);
+            // === 2. Create a kinematic cylinder ===
+            InitCylindricShape(0.5f, 2f);
+            // === 3. Step the simulation while moving the cylinder downward ===
+            OnCollisionRegistered?.Invoke($"[{DateTime.Now}] Stepping over simulation");
+            for (int step = 0; step < 60; step++)
+            {
+                float y = 2f - step * 0.05f;
+
+                simulateMoveCylindrikSingleStep(new Vector3(0, y, 0));
+            }
+            finalizeSimulation();
+        }
+        public void simulateMoveCylindrikSingleStep(Vector3 targetPosition)
+        {
+            var body = simulation.Bodies.GetBodyReference(cylinderHandle);
+            body.Pose.Position = targetPosition;
+            //body.Velocity.Linear = new Vector3(0, -3f, 0); //Must have non-zero velocity to trigger contacts!
+
+            simulation.Timestep(1f / 60f);
+        }
+        private void finalizeSimulation()
+        {
+            OnCollisionRegistered?.Invoke($"[{DateTime.Now}] Simulation complete");
+            simulation.Dispose();
+            pool.Clear();
+        }
+        public void InitStaticBoxShape(float dimX, float dimY, float dimZ)
+        {
+            var boxShape = new Box(dimX, dimY, dimZ); // Axis-aligned box: 4 wide, 1 tall, 1 deep
             var boxShapeIndex = simulation.Shapes.Add(boxShape);
 
             var staticDescription = new StaticDescription(
@@ -68,38 +98,17 @@ namespace WpfCollision
             );
             simulation.Statics.Add(staticDescription);
             OnCollisionRegistered?.Invoke($"[{DateTime.Now}] Static box created");
-            // === 2. Create a kinematic cylinder ===
-            InitCylindricShape();
-            // === 3. Step the simulation while moving the cylinder downward ===
-            OnCollisionRegistered?.Invoke($"[{DateTime.Now}] Stepping over simulation");
-            for (int step = 0; step < 60; step++)
-            {
-                float y = 2f - step * 0.05f;
-                // what may it be
-                var body = simulation.Bodies.GetBodyReference(cylinderHandle);
-                body.Pose.Position = new Vector3(0, y, 0);
-                //body.Velocity.Linear = new Vector3(0, -3f, 0); //Must have non-zero velocity to trigger contacts!
-
-                simulation.Timestep(1f / 60f);
-            }
-            finalizeSimulation();
-        }
-        private void finalizeSimulation()
-        {
-            OnCollisionRegistered?.Invoke($"[{DateTime.Now}] Simulation complete");
-            simulation.Dispose();
-            pool.Clear();
         }
         /// <summary>
         /// create kynematic shape of cylindric for collision simulation
         /// </summary>
-        public void InitCylindricShape()
+        public void InitCylindricShape(float radius, float length)
         {
             var cylinder = new Cylinder(0.5f, 2f);
             var cylinderShapeIndex = simulation.Shapes.Add(cylinder);
 
             var pose = new RigidPose(
-                new Vector3(0, 0f, 0)
+                new Vector3(0, 0f, 0f)
                 /*Quaternion.CreateFromAxisAngle(Vector3.UnitX, MathF.PI / 4)*/
             );
             // You could also force the kinematic to always be awake by settings its sleeping velocity threshold to a negative value in BodyActivityDescription.

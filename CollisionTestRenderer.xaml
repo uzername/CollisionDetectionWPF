@@ -24,5 +24,6 @@
          SubTitle="" 
          TextBrush="Gray">
         <h:DefaultLights />
+        <h:GridLinesVisual3D Width="30" Length="30"></h:GridLinesVisual3D>
     </h:HelixViewport3D>
 </UserControl>

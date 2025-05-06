@@ -21,6 +21,8 @@ namespace WpfCollision
         {
             InitializeComponent();
             this.DataContext = new MainWindowVM();
+            rendererInstance.LoadStaticShapeInViewport(4,1,1);
+            rendererInstance.LoadKynematicCylinderInViewport(0.5, 2);
         }
 
         private void ButtonSimulate_Click(object sender, RoutedEventArgs e)
