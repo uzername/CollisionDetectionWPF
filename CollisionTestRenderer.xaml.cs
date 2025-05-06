@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection.Metadata;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
@@ -43,165 +44,37 @@ namespace WpfCollision
 
         private const string boxName = "StaticBox";
         private const String cylinderName = "KynematicCylinder";
+        private ModelVisual3D modelVisualCylindric;
+        private GeometryModel3D modelCylindric;
 
         private MatrixTransform3D cylinderTransform;
         public double StartCylinderX
         {
-            get { return (double)GetValue(StartCylinderXProperty); }
-            set
-            {
-                SetValue(StartCylinderXProperty, value);
-
-            }
+            get;  set;
         }
         public double StartCylinderY
         {
-            get { return (double)GetValue(StartCylinderYProperty); }
-            set
-            {
-                SetValue(StartCylinderYProperty, value);
-            }
+            get;  set;
         }
         public double StartCylinderZ
         {
-            get { return (double)GetValue(StartCylinderZProperty); }
-            set
-            {
-                SetValue(StartCylinderZProperty, value);
-            }
+            get;  set;
         }
-        public double StartCylinderAngleX
+        public double EndCylinderX
         {
-            get { return (double)GetValue(StartCylinderAngleXProperty); }
-            set
-            {
-                SetValue(StartCylinderAngleXProperty, value);
-            }
+            get;  set;
         }
-        // ==== DEPENDENCY PROPERTIES FOR CYLINDER POSITION ====
-        // https://metanit.com/sharp/wpf/13.php
-        public static readonly DependencyProperty StartCylinderXProperty = DependencyProperty.Register(
-                    "StartCylinderX",
-                    typeof(double),
-                    typeof(CollisionTestRenderer),
-                    new FrameworkPropertyMetadata(
-                        0.0,
-                        FrameworkPropertyMetadataOptions.None,
-                        new PropertyChangedCallback(OnStartCylinderXChanged),
-                        new CoerceValueCallback(CoerceStartCylinderX)));
-
-        private static object CoerceStartCylinderX(DependencyObject d, object baseValue)
+        public double EndCylinderY
         {
-            return baseValue;
+            get;  set;
         }
-
-        private static void OnStartCylinderXChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        public double EndCylinderZ
         {
-            if (d is CollisionTestRenderer control)
-            {
-                // Call an instance method to handle the change
-                control.OnStartCylinderXChangedInstance((double)e.OldValue, (double)e.NewValue);
-            }
+            get;  set;
         }
-
-        private void OnStartCylinderXChangedInstance(double oldValue, double newValue)
-        {
-            if (IsCylinderMoving || IsCylinderAllocatingDisabled) return;
-            Matrix3D mm = getTransformMatrix(StartCylinderAngleX, StartCylinderX, StartCylinderY, StartCylinderZ);
-            cylinderTransform.Matrix = mm;
-        }
-
-        public static readonly DependencyProperty StartCylinderYProperty = DependencyProperty.Register(
-                    "StartCylinderY",
-                    typeof(double),
-                    typeof(CollisionTestRenderer),
-                    new FrameworkPropertyMetadata(
-                        0.0,
-                        FrameworkPropertyMetadataOptions.None,
-                        new PropertyChangedCallback(OnStartCylinderYChanged),
-                        new CoerceValueCallback(CoerceStartCylinderY)));
-
-        private static object CoerceStartCylinderY(DependencyObject d, object baseValue)
-        {
-            return baseValue;
-        }
-
-        private static void OnStartCylinderYChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
-        {
-            if (d is CollisionTestRenderer control)
-            {
-                // Call an instance method to handle the change
-                control.OnStartCylinderYChangedInstance((double)e.OldValue, (double)e.NewValue);
-            }
-        }
-
-        private void OnStartCylinderYChangedInstance(double oldValue, double newValue)
-        {
-            if (IsCylinderMoving || IsCylinderAllocatingDisabled) return;
-            Matrix3D mm = getTransformMatrix(StartCylinderAngleX, StartCylinderX, StartCylinderY, StartCylinderZ);
-            cylinderTransform.Matrix = mm;
-        }
-
-        public static readonly DependencyProperty StartCylinderZProperty = DependencyProperty.Register(
-                    "StartCylinderZ",
-                    typeof(double),
-                    typeof(CollisionTestRenderer),
-                    new FrameworkPropertyMetadata(
-                        0.0,
-                        FrameworkPropertyMetadataOptions.None,
-                        new PropertyChangedCallback(OnStartCylinderZChanged),
-                        new CoerceValueCallback(CoerceStartCylinderZ)));
-
-        private static object CoerceStartCylinderZ(DependencyObject d, object baseValue)
-        {
-            return baseValue;
-        }
-
-        private static void OnStartCylinderZChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
-        {
-            if (d is CollisionTestRenderer control)
-            {
-                // Call an instance method to handle the change
-                control.OnStartCylinderZChangedInstance((double)e.OldValue, (double)e.NewValue);
-            }
-        }
-
-        private void OnStartCylinderZChangedInstance(double oldValue, double newValue)
-        {
-            if (IsCylinderMoving || IsCylinderAllocatingDisabled) return;
-            Matrix3D mm = getTransformMatrix(StartCylinderAngleX, StartCylinderX, StartCylinderY, StartCylinderZ);
-            cylinderTransform.Matrix = mm;
-        }
-
-        public static readonly DependencyProperty StartCylinderAngleXProperty = DependencyProperty.Register(
-                    "StartCylinderAngleX",
-                    typeof(double),
-                    typeof(CollisionTestRenderer),
-                    new FrameworkPropertyMetadata(
-                        0.0,
-                        FrameworkPropertyMetadataOptions.None,
-                        new PropertyChangedCallback(OnStartCylinderAngleXChanged),
-                        new CoerceValueCallback(CoerceStartCylinderXAngle)));
-
-        private static object CoerceStartCylinderXAngle(DependencyObject d, object baseValue)
-        {
-            return baseValue;
-        }
-
-        private static void OnStartCylinderAngleXChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
-        {
-            if (d is CollisionTestRenderer control)
-            {
-                // Call an instance method to handle the change
-                control.OnStartCylinderAngleXChangedInstance((double)e.OldValue, (double)e.NewValue);
-            }
-        }
-        private void OnStartCylinderAngleXChangedInstance(double oldValue, double newValue)
-        {
-            if (IsCylinderMoving || IsCylinderAllocatingDisabled) return;
-            Matrix3D mm = getTransformMatrix(StartCylinderAngleX, StartCylinderX, StartCylinderY, StartCylinderZ);
-            cylinderTransform.Matrix = mm;
-        }
+        public double CylinderAngleX { get; set; }
+        public double CylinderAngleY { get; set; }
+        public double CylinderAngleZ { get; set; }
         /// <summary>
         /// get transform matrix for initial positioning
         /// </summary>
@@ -247,9 +120,7 @@ namespace WpfCollision
             // Create the 3D box geometry
             var builder = new MeshBuilder(false, false);
             builder.AddBox(center: new Point3D(0, 0, 0),
-                           xlength: XDim,
-                           ylength: YDim,
-                           zlength: ZDim);
+                           xlength: XDim, ylength: YDim, zlength: ZDim);
 
             var mesh = builder.ToMesh();
 
@@ -289,7 +160,7 @@ namespace WpfCollision
             var material = new DiffuseMaterial(new SolidColorBrush(Colors.Blue));
 
             // Create the model
-            var model = new GeometryModel3D
+             modelCylindric = new GeometryModel3D
             {
                 Geometry = mesh,
                 Material = material,
@@ -297,19 +168,26 @@ namespace WpfCollision
             };
 
             // Create a visual for the model
-            var modelVisual = new ModelVisual3D
+            modelVisualCylindric = new ModelVisual3D
             {
-                Content = model
+                Content = modelCylindric
             };
-            modelVisual.SetName(cylinderName);
+            modelVisualCylindric.SetName(cylinderName);
             // Add the visual to the viewport
-            viewPort3d.Children.Add(modelVisual);
+            viewPort3d.Children.Add(modelVisualCylindric);
 
         }
-
-        public void repositionCylindricOnScene()
+        /// <summary>
+        /// assign positions to cylindric. rotation is ignored by now
+        /// </summary>
+        /// <param name="startCoordinates"></param>
+        /// <param name="endCoordinates"></param>
+        public void repositionCylindricOnScene(Point3D startCoordinates, Point3D endCoordinates)
         {
             IsCylinderAllocatingDisabled = true;
+            StartCylinderX = startCoordinates.X; StartCylinderY = startCoordinates.Y; StartCylinderZ = startCoordinates.Z;
+            EndCylinderX = endCoordinates.X; EndCylinderY = endCoordinates.Y; EndCylinderZ = endCoordinates.Z;
+            Matrix3D mm = getTransformMatrix(0, StartCylinderX, StartCylinderY, StartCylinderZ);
 
             IsCylinderAllocatingDisabled = false;
         }
