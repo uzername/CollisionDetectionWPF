@@ -24,14 +24,7 @@ namespace WpfCollision
         private NarrowPhaseCallbacks narrowPhaseCallbacks;
        public void SimulationSimple()
         {
-            pool = new BufferPool();
-            narrowPhaseCallbacks = new NarrowPhaseCallbacks();
-            if (OnCollisionRegistered!=null)
-            {
-                narrowPhaseCallbacks.OnCollisionRegistered += this.OnCollisionRegistered;
-            }
-            simulation = Simulation.Create(pool, narrowPhaseCallbacks, new PoseIntegratorCallbacks(), new SolveDescription(1, 1));
-            OnCollisionRegistered?.Invoke($"[{DateTime.Now}] simulation initialized");
+            initializeSimulation();
             // === 1. Create a static mesh collider ===
             /*
             var triangleVertices = new[]
@@ -71,7 +64,7 @@ namespace WpfCollision
 
                 simulateMoveCylindrikSingleStep(new Vector3(0, y, 0));
             }
-            finalizeSimulation();
+            // finalizeSimulation() should be called when we do not need physics simulation and collision detection
         }
         public void simulateMoveCylindrikSingleStep(Vector3 targetPosition)
         {
@@ -81,7 +74,22 @@ namespace WpfCollision
 
             simulation.Timestep(1f / 60f);
         }
-        private void finalizeSimulation()
+        
+        public void initializeSimulation()
+        {
+            pool = new BufferPool();
+            narrowPhaseCallbacks = new NarrowPhaseCallbacks();
+            if (OnCollisionRegistered != null)
+            {
+                narrowPhaseCallbacks.OnCollisionRegistered += this.OnCollisionRegistered;
+            }
+            simulation = Simulation.Create(pool, narrowPhaseCallbacks, new PoseIntegratorCallbacks(), new SolveDescription(1, 1));
+            OnCollisionRegistered?.Invoke($"[{DateTime.Now}] simulation initialized");
+        }
+        /// <summary>
+        /// absolutely required to call this, it dealocates internal memory structures. Or else there will be memory leaks
+        /// </summary>
+        public void FinalizeSimulation()
         {
             OnCollisionRegistered?.Invoke($"[{DateTime.Now}] Simulation complete");
             simulation.Dispose();
@@ -190,7 +198,9 @@ namespace WpfCollision
                 if (manifold.Count > 0)
                 {
                     //Debug.WriteLine($"Collision between two bodies with {manifold.Count} contact(s).");
-                    OnCollisionRegistered?.Invoke($"[{DateTime.Now}]Collision between two bodies with {manifold.Count} contact(s).");
+                    OnCollisionRegistered?.Invoke($"[{DateTime.Now}] Collision between two bodies with {manifold.Count} contact(s).");
+                } else {
+                    OnCollisionRegistered?.Invoke($"[{DateTime.Now}] No Collision registered");
                 }
 
                 material = new PairMaterialProperties

@@ -1,4 +1,5 @@
-﻿using System.Text;
+﻿using System.Reflection.Metadata;
+using System.Text;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
@@ -17,25 +18,42 @@ namespace WpfCollision
     /// </summary>
     public partial class MainWindow : Window
     {
+        CollisionDetectionHandler physicsHandler = new CollisionDetectionHandler();
         public MainWindow()
         {
             InitializeComponent();
             this.DataContext = new MainWindowVM();
             rendererInstance.LoadStaticShapeInViewport(4,1,1);
             rendererInstance.LoadKynematicCylinderInViewport(0.5, 2);
+            rendererInstance.repositionCylindricOnScene(new System.Windows.Media.Media3D.Point3D(10, 0, 5), new System.Windows.Media.Media3D.Point3D(-10, 0, -5));
+            physicsHandler.OnCollisionRegistered += PhysicsHandler_OnCollisionRegistered;
+            physicsHandler.initializeSimulation();
+            physicsHandler.InitStaticBoxShape(4f, 1f, 1f);
+            physicsHandler.InitCylindricShape(0.5f, 2f);
+            physicsHandler.simulateMoveCylindrikSingleStep(new System.Numerics.Vector3(10, 0, 5));
+            rendererInstance.OnCoordinateChanged += RendererInstance_OnCoordinateChanged;
+        }
+
+        private void RendererInstance_OnCoordinateChanged(double x, double y, double Z)
+        {
+            ((this.DataContext) as MainWindowVM).TextboxDatasource.AppendLine($"Coordinate of cylinder: [ {x} ; {y} ; {Z}]");
+            physicsHandler.simulateMoveCylindrikSingleStep(new System.Numerics.Vector3((float)x, (float)y, (float)Z));
         }
 
         private void ButtonSimulate_Click(object sender, RoutedEventArgs e)
         {
-            CollisionDetectionHandler currentHandler = new CollisionDetectionHandler();
-            currentHandler.OnCollisionRegistered += CurrentHandler_OnCollisionRegistered;
-            currentHandler.SimulationSimple();
-            //SimpleSelfContainedDemo.Run();
+            
+            rendererInstance.StartMovement();
         }
 
-        private void CurrentHandler_OnCollisionRegistered(string parameter)
+        private void PhysicsHandler_OnCollisionRegistered(string parameter)
         {
             ((this.DataContext) as MainWindowVM).TextboxDatasource.AppendLine(parameter);
+        }
+
+        private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+            physicsHandler.FinalizeSimulation();
         }
     }
 }
