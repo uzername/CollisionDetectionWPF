@@ -112,7 +112,7 @@ namespace WpfCollision
         /// </summary>
         public void InitCylindricShape(float radius, float length)
         {
-            var cylinder = new Cylinder(0.5f, 2f);
+            var cylinder = new Cylinder(radius, length);
             var cylinderShapeIndex = simulation.Shapes.Add(cylinder);
 
             var pose = new RigidPose(

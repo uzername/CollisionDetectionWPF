@@ -17,9 +17,6 @@
          CameraRotationMode="Trackball"
          ShowCoordinateSystem="True"
          CoordinateSystemLabelForeground="DarkGreen"
-         CoordinateSystemLabelX="y"
-         CoordinateSystemLabelY="x"
-         CoordinateSystemLabelZ="z"
          Title=""
          SubTitle="" 
          TextBrush="Gray">

@@ -25,12 +25,12 @@ namespace WpfCollision
             this.DataContext = new MainWindowVM();
             rendererInstance.LoadStaticShapeInViewport(4,1,1);
             rendererInstance.LoadKynematicCylinderInViewport(0.5, 2);
-            rendererInstance.repositionCylindricOnScene(new System.Windows.Media.Media3D.Point3D(10, 0, 5), new System.Windows.Media.Media3D.Point3D(-10, 0, -5));
+            rendererInstance.repositionCylindricOnScene(new System.Windows.Media.Media3D.Point3D(0, 0, 10), new System.Windows.Media.Media3D.Point3D(0, 0, -10));
             physicsHandler.OnCollisionRegistered += PhysicsHandler_OnCollisionRegistered;
             physicsHandler.initializeSimulation();
             physicsHandler.InitStaticBoxShape(4f, 1f, 1f);
             physicsHandler.InitCylindricShape(0.5f, 2f);
-            physicsHandler.simulateMoveCylindrikSingleStep(new System.Numerics.Vector3(10, 0, 5));
+            physicsHandler.simulateMoveCylindrikSingleStep(new System.Numerics.Vector3(0, 0, 10));
             rendererInstance.OnCoordinateChanged += RendererInstance_OnCoordinateChanged;
         }
 
