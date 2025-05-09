@@ -24,12 +24,12 @@ namespace WpfCollision
             InitializeComponent();
             this.DataContext = new MainWindowVM();
             rendererInstance.LoadStaticShapeInViewport(4,1,1);
-            rendererInstance.LoadKynematicCylinderInViewport(0.5, 2);
+            rendererInstance.LoadKynematicCylinderInViewport(2.0, 1);
             rendererInstance.repositionCylindricOnScene(new System.Windows.Media.Media3D.Point3D(0, 0, 10), new System.Windows.Media.Media3D.Point3D(0, 0, -10));
             physicsHandler.OnCollisionRegistered += PhysicsHandler_OnCollisionRegistered;
             physicsHandler.initializeSimulation();
             physicsHandler.InitStaticBoxShape(4f, 1f, 1f);
-            physicsHandler.InitCylindricShape(0.5f, 2f);
+            physicsHandler.InitCylindricShape(2.0f, 1f);
             physicsHandler.simulateMoveCylindrikSingleStep(new System.Numerics.Vector3(0, 0, 10));
             rendererInstance.OnCoordinateChanged += RendererInstance_OnCoordinateChanged;
         }
@@ -37,7 +37,9 @@ namespace WpfCollision
         private void RendererInstance_OnCoordinateChanged(double x, double y, double Z)
         {
             ((this.DataContext) as MainWindowVM).TextboxDatasource.AppendLine($"Coordinate of cylinder: [ {x} ; {y} ; {Z}]");
-            physicsHandler.simulateMoveCylindrikSingleStep(new System.Numerics.Vector3((float)x, (float)y, (float)Z));
+            // in bepuphysics2 y goes to top , in Helix Toolkit Z goes to top, so I need to swap
+            // probably use Vector3_ToBepu from RotationAndCoordinateConversion
+            physicsHandler.simulateMoveCylindrikSingleStep(new System.Numerics.Vector3((float)x, (float)Z, (float)y));
         }
 
         private void ButtonSimulate_Click(object sender, RoutedEventArgs e)

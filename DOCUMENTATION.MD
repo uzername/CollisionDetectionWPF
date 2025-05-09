@@ -15,4 +15,11 @@ A contact manifold is a collection of one or more contact points that describe h
 
 Each contact point usually includes: Contact position (in world space), Normal vector (direction of the contact), Penetration depth, Feature IDs (optional – what part of each shape is involved).
 
+BepuPhysics2 has different coordinate system, so I should supply Z coordinate from Helix Toolkit to Y coordinate of Bepu Physics
+
+Framework     |"Up" Axis | Forward Axis | Notes                     |
+--------------|----------|--------------|---------------------------|
+BepuPhysics2  |Y         |Z             |Right-handed system        |
+--------------|----------|--------------|---------------------------|
+Helix Toolkit |Z         |Y (or -Y)     | Based on WPF 3D / DirectX |
 

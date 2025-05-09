@@ -66,6 +66,8 @@ namespace WpfCollision
             }
             // finalizeSimulation() should be called when we do not need physics simulation and collision detection
         }
+        
+
         public void simulateMoveCylindrikSingleStep(Vector3 targetPosition)
         {
             var body = simulation.Bodies.GetBodyReference(cylinderHandle);
@@ -116,8 +118,10 @@ namespace WpfCollision
             var cylinderShapeIndex = simulation.Shapes.Add(cylinder);
 
             var pose = new RigidPose(
-                new Vector3(0, 0f, 0f)
-                /*Quaternion.CreateFromAxisAngle(Vector3.UnitX, MathF.PI / 4)*/
+                new Vector3(0, 0f, 0f)//,
+                // The Cylinder shape is aligned along the X-axis by default, as seen by experience
+                // rotation should not be used here because we are flipping coordinates from Helix toolkit to Bepu
+                //Quaternion.CreateFromAxisAngle(Vector3.UnitZ, MathF.PI / 2)
             );
             // You could also force the kinematic to always be awake by settings its sleeping velocity threshold to a negative value in BodyActivityDescription.
             cylinderHandle = simulation.Bodies.Add(BodyDescription.CreateKinematic(
@@ -126,6 +130,33 @@ namespace WpfCollision
                 new BodyActivityDescription(-1)
             ));
             OnCollisionRegistered?.Invoke($"[{DateTime.Now}] Kinematics cylinder created");
+        }
+        public void assignRadiusLengthToCylindric(float newRadius, float newLength)
+        {
+            
+            // at first, save pose
+            var body = simulation.Bodies.GetBodyReference(cylinderHandle);
+            Quaternion savedRotation = body.Pose.Orientation;
+            Vector3 savedPosition = body.Pose.Position;
+            var restoredPose = new RigidPose(
+                savedPosition,
+                savedRotation
+            );
+
+            // Remove old body
+            simulation.Bodies.Remove(cylinderHandle);
+
+            // Create new shape with updated radius/length
+            var newCylinder = new Cylinder(newRadius, newLength);
+            var newShapeIndex = simulation.Shapes.Add(newCylinder);
+
+            // Create new body with the updated shape and also reuse pose
+            cylinderHandle = simulation.Bodies.Add(BodyDescription.CreateKinematic(
+                restoredPose,
+                new CollidableDescription(newShapeIndex, 0.1f),
+                new BodyActivityDescription(-1)
+            ));
+
         }
         /// <summary>
         /// should be called after InitCylindricShape. for consistency reason should not be called when movement is running (nothing bad happen but still)
