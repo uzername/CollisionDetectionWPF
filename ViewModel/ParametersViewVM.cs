@@ -8,6 +8,80 @@ using System.Threading.Tasks;
 namespace WpfCollision.ViewModel
 {
     public class ParametersViewVM: ObservableObject  {
+        private double _BoxXDim;
+        private double _BoxYDim;
+        private double _BoxZDim;
+        private double _CylRadius;
+        private double _CylHeight;
+
+        private double _CylStartX;
+        private double _CylStartY;
+        private double _CylStartZ;
+        private double _CylEndX;
+        private double _CylEndY;
+        private double _CylEndZ;
+        private double _CylAngle;
+
+        public double BoxXDim
+        {
+            get => _BoxXDim;
+            set => SetProperty(ref _BoxXDim, value);
+        }
+        public double BoxYDim
+        {
+            get => _BoxYDim;
+            set => SetProperty(ref _BoxYDim, value);
+        }
+        public double BoxZDim
+        {
+            get => _BoxZDim;
+            set => SetProperty(ref _BoxZDim, value);
+        }
+        public double CylRadius
+        {
+            get => _CylRadius;
+            set => SetProperty(ref _CylRadius, value);
+        }
+        public double CylHeight
+        {
+            get => _CylHeight;
+            set => SetProperty(ref _CylHeight, value);
+        }
+        public double CylStartX
+        {
+            get => _CylStartX;
+            set => SetProperty(ref _CylStartX, value);
+        }
+        public double CylStartY
+        {
+            get => _CylStartY;
+            set => SetProperty(ref _CylStartY, value);
+        }
+        public double CylStartZ
+        {
+            get => _CylStartZ;
+            set => SetProperty(ref _CylStartZ, value);
+        }
+        public double CylEndX
+        {
+            get => _CylEndX;
+            set => SetProperty(ref _CylEndX, value);
+        }
+        public double CylEndY
+        {
+            get => _CylEndY;
+            set => SetProperty(ref _CylEndY, value);
+        }
+        public double CylEndZ
+        {
+            get => _CylEndZ;
+            set => SetProperty(ref _CylEndZ, value);
+        }
+        public double CylAngle
+        {
+            get => _CylAngle;
+            set => SetProperty(ref _CylAngle, value);
+        }
 
     }
 }

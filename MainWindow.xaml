@@ -13,17 +13,31 @@
             <RowDefinition Height="Auto"></RowDefinition>
             <!-- 3D display -->
             <RowDefinition Height="0.5*"></RowDefinition>
+            <!-- Button Apply -->
+            <RowDefinition Height="Auto"></RowDefinition>
             <!-- grid splitter -->
             <RowDefinition Height="5"></RowDefinition>
+            <!-- for button apply -->
             <!-- for text -->
             <RowDefinition Height="0.5*"></RowDefinition>
 
         </Grid.RowDefinitions>
-        <StackPanel Orientation="Horizontal" Grid.Row="0" Grid.Column="0">
+        <Grid.ColumnDefinitions>
+            <!-- parameters view  -->
+            <ColumnDefinition Width="0.5*"></ColumnDefinition>
+            <!-- Vertical splitter -->
+            <ColumnDefinition Width="5"></ColumnDefinition>
+            <!-- 3d display -->
+            <ColumnDefinition Width="1*"></ColumnDefinition>
+        </Grid.ColumnDefinitions>
+        <StackPanel Orientation="Horizontal" Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="3">
             <Button Content="Start Collision detection" Margin="2" Name="ButtonSimulate" Click="ButtonSimulate_Click"/>
         </StackPanel>
-        <local:CollisionTestRenderer Grid.Column="0" Grid.Row="1" x:Name="rendererInstance"></local:CollisionTestRenderer>
-        <GridSplitter Grid.Column="0" Height="5" Grid.Row="2" HorizontalAlignment="Stretch" VerticalAlignment="Center"></GridSplitter>
-        <TextBox Name="TextBoxLog" FontFamily="Lucida Console" AcceptsReturn="True" IsReadOnly="True" TextWrapping="Wrap" DataContext="{Binding Path=TextboxDatasource}" Text="{Binding Path=TextLog}" VerticalScrollBarVisibility="Auto" Grid.Row="3" Grid.Column="0"></TextBox>
+        <local:ParametersView Grid.Column="0" Grid.Row="1" DataContext="{Binding ParametersDatasource}"></local:ParametersView>
+        <GridSplitter Grid.Column="1" Grid.Row="1" Grid.RowSpan="2" Width="5" VerticalAlignment="Stretch" HorizontalAlignment="Center" ></GridSplitter>
+        <local:CollisionTestRenderer Grid.Column="2" Grid.Row="1" Grid.RowSpan="2" x:Name="rendererInstance"></local:CollisionTestRenderer>
+        <Button Grid.Column="0" Grid.Row="2" Name="ButtonApply" Click="ButtonApply_Click">Apply Parameters</Button>
+        <GridSplitter Grid.Column="0" Height="5" Grid.Row="3" HorizontalAlignment="Stretch" VerticalAlignment="Center" Grid.ColumnSpan="3"></GridSplitter>
+        <TextBox Name="TextBoxLog" FontFamily="Lucida Console" AcceptsReturn="True" IsReadOnly="True" TextWrapping="Wrap" DataContext="{Binding Path=TextboxDatasource}" Text="{Binding Path=TextLog}" VerticalScrollBarVisibility="Auto" Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="3"></TextBox>
     </Grid>
 </Window>

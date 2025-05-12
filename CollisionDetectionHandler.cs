@@ -231,7 +231,7 @@ namespace WpfCollision
                     //Debug.WriteLine($"Collision between two bodies with {manifold.Count} contact(s).");
                     OnCollisionRegistered?.Invoke($"[{DateTime.Now}] Collision between two bodies with {manifold.Count} contact(s).");
                 } else {
-                    OnCollisionRegistered?.Invoke($"[{DateTime.Now}] No Collision registered");
+                    OnCollisionRegistered?.Invoke($"[{DateTime.Now}] Collision registered but no contact points reported");
                 }
 
                 material = new PairMaterialProperties

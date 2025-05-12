@@ -6,82 +6,90 @@
              xmlns:local="clr-namespace:WpfCollision"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
-    <TabControl Name="TabsMain">
-        <TabItem Name="GeometryTab" Header="Geometry Options">
-            <Grid>
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="Auto"/>
-                    <ColumnDefinition Width="1*"/>
-                </Grid.ColumnDefinitions>
-                <Grid.RowDefinitions>
-                    <!-- Header Box Geometry -->
-                    <RowDefinition Height="Auto"/>
-                    <!-- XDim -->
-                    <RowDefinition Height="Auto"/>
-                    <!-- YDim -->
-                    <RowDefinition Height="Auto"/>
-                    <!-- ZDim -->
-                    <RowDefinition Height="Auto"/>
-                    <!-- Header Cylinder Geometry -->
-                    <RowDefinition Height="Auto"/>
-                    <!-- Diameter -->
-                    <RowDefinition Height="Auto"/>
-
-                    <RowDefinition Height="1*"/>
-                </Grid.RowDefinitions>
-                <Label   Grid.Column="0" Grid.Row="0" Grid.ColumnSpan="2" Content="Box Geometry"></Label>
-                <Label   Grid.Column="0" Grid.Row="1" Content="X Dimension"></Label>
-                <TextBox Grid.Column="1" Grid.Row="1" Name="BoxXDim"></TextBox>
-                <Label   Grid.Column="0" Grid.Row="2" Content="Y Dimension"></Label>
-                <TextBox Grid.Column="1" Grid.Row="2" Name="BoxYDim"></TextBox>
-                <Label   Grid.Column="0" Grid.Row="3" Content="Z Dimension"></Label>
-                <TextBox Grid.Column="1" Grid.Row="3" Name="BoxZDim"></TextBox>
-                <Label   Grid.Column="0" Grid.Row="4" Grid.ColumnSpan="2" Content="Cylinder Geometry"></Label>
-                <Label   Grid.Column="0" Grid.Row="5" Content="Diameter"></Label>
-                <TextBox Grid.Column="1" Grid.Row="5" Name="CylDiameter"></TextBox>
-            </Grid>
-        </TabItem>
-        <TabItem Name="PositionTab" Header="Position Options">
-            <Grid>
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="Auto"/>
-                    <ColumnDefinition Width="1*"/>
-                </Grid.ColumnDefinitions>
-                <Grid.RowDefinitions>
-                    <!-- Header Start Position Cylinder -->
-                    <RowDefinition Height="Auto"/>
-                    <!-- X -->
-                    <RowDefinition Height="Auto"/>
-                    <!-- Y -->
-                    <RowDefinition Height="Auto"/>
-                    <!-- Z -->
-                    <RowDefinition Height="Auto"/>
-                    <!-- Header End Position Cylinder -->
-                    <RowDefinition Height="Auto"/>
-                    <!-- X -->
-                    <RowDefinition Height="Auto"/>
-                    <!-- Y -->
-                    <RowDefinition Height="Auto"/>
-                    <!-- Z -->
-                    <RowDefinition Height="Auto"/>
-                    
-                    <RowDefinition Height="1*"/>
-                </Grid.RowDefinitions>
-                <Label   Grid.Column="0" Grid.Row="0" Grid.ColumnSpan="2" Content="Start Position Cylinder"></Label>
-                <Label   Grid.Column="0" Grid.Row="1" Content="X"></Label>
-                <TextBox Grid.Column="1" Grid.Row="1" Name="StartX"></TextBox>
-                <Label   Grid.Column="0" Grid.Row="2" Content="Y"></Label>
-                <TextBox Grid.Column="1" Grid.Row="2" Name="StartY"></TextBox>
-                <Label   Grid.Column="0" Grid.Row="3" Content="Z"></Label>
-                <TextBox Grid.Column="1" Grid.Row="3" Name="StartZ"></TextBox>
-                <Label   Grid.Column="0" Grid.Row="4" Grid.ColumnSpan="2" Content="End Position Cylinder"></Label>
-                <Label   Grid.Column="0" Grid.Row="5" Content="X"></Label>
-                <TextBox Grid.Column="1" Grid.Row="5" Name="EndX"></TextBox>
-                <Label   Grid.Column="0" Grid.Row="6" Content="Y"></Label>
-                <TextBox Grid.Column="1" Grid.Row="6" Name="EndY"></TextBox>
-                <Label   Grid.Column="0" Grid.Row="7" Content="Z"></Label>
-                <TextBox Grid.Column="1" Grid.Row="7" Name="EndZ"></TextBox>
-            </Grid>
-        </TabItem>
-    </TabControl>
+    <ScrollViewer>
+        <TabControl Name="TabsMain">
+            <TabItem Name="GeometryTab" Header="Geometry Options">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="1*"/>
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <!-- Header Box Geometry -->
+                        <RowDefinition Height="Auto"/>
+                        <!-- XDim -->
+                        <RowDefinition Height="Auto"/>
+                        <!-- YDim -->
+                        <RowDefinition Height="Auto"/>
+                        <!-- ZDim -->
+                        <RowDefinition Height="Auto"/>
+                        <!-- Header Cylinder Geometry -->
+                        <RowDefinition Height="Auto"/>
+                        <!-- Diameter -->
+                        <RowDefinition Height="Auto"/>
+                        <!-- Height -->
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="1*"/>
+                    </Grid.RowDefinitions>
+                    <Label   Grid.Column="0" Grid.Row="0" Grid.ColumnSpan="2" Content="Box Geometry"></Label>
+                    <Label   Grid.Column="0" Grid.Row="1" Content="X Dimension"></Label>
+                    <TextBox Grid.Column="1" Grid.Row="1" Name="BoxXDim" Text="{Binding Path=BoxXDim}"></TextBox>
+                    <Label   Grid.Column="0" Grid.Row="2" Content="Y Dimension"></Label>
+                    <TextBox Grid.Column="1" Grid.Row="2" Name="BoxYDim" Text="{Binding Path=BoxYDim}"></TextBox>
+                    <Label   Grid.Column="0" Grid.Row="3" Content="Z Dimension"></Label>
+                    <TextBox Grid.Column="1" Grid.Row="3" Name="BoxZDim" Text="{Binding Path=BoxZDim}"></TextBox>
+                    <Label   Grid.Column="0" Grid.Row="4" Grid.ColumnSpan="2" Content="Cylinder Geometry"></Label>
+                    <Label   Grid.Column="0" Grid.Row="5" Content="Radius"></Label>
+                    <TextBox Grid.Column="1" Grid.Row="5" Name="CylRadius" Text="{Binding Path=CylRadius}"></TextBox>
+                    <Label   Grid.Column="0" Grid.Row="6" Content="Height"></Label>
+                    <TextBox Grid.Column="1" Grid.Row="6" Name="CylHeight" Text="{Binding Path=CylHeight}"></TextBox>
+                </Grid>
+            </TabItem>
+            <TabItem Name="PositionTab" Header="Position Options">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="1*"/>
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <!-- Header Start Position Cylinder -->
+                        <RowDefinition Height="Auto"/>
+                        <!-- X -->
+                        <RowDefinition Height="Auto"/>
+                        <!-- Y -->
+                        <RowDefinition Height="Auto"/>
+                        <!-- Z -->
+                        <RowDefinition Height="Auto"/>
+                        <!-- Header End Position Cylinder -->
+                        <RowDefinition Height="Auto"/>
+                        <!-- X -->
+                        <RowDefinition Height="Auto"/>
+                        <!-- Y -->
+                        <RowDefinition Height="Auto"/>
+                        <!-- Z -->
+                        <RowDefinition Height="Auto"/>
+                        <!-- angle -->
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="1*"/>
+                    </Grid.RowDefinitions>
+                    <Label   Grid.Column="0" Grid.Row="0" Grid.ColumnSpan="2" Content="Start Position Cylinder"></Label>
+                    <Label   Grid.Column="0" Grid.Row="1" Content="X"></Label>
+                    <TextBox Grid.Column="1" Grid.Row="1" Name="CylStartX" Text="{Binding CylStartX}"></TextBox>
+                    <Label   Grid.Column="0" Grid.Row="2" Content="Y"></Label>
+                    <TextBox Grid.Column="1" Grid.Row="2" Name="CylStartY" Text="{Binding CylStartY}"></TextBox>
+                    <Label   Grid.Column="0" Grid.Row="3" Content="Z"></Label>
+                    <TextBox Grid.Column="1" Grid.Row="3" Name="CylStartZ" Text="{Binding CylStartZ}"></TextBox>
+                    <Label   Grid.Column="0" Grid.Row="4" Grid.ColumnSpan="2" Content="End Position Cylinder"></Label>
+                    <Label   Grid.Column="0" Grid.Row="5" Content="X"></Label>
+                    <TextBox Grid.Column="1" Grid.Row="5" Name="CylEndX" Text="{Binding CylEndX}"></TextBox>
+                    <Label   Grid.Column="0" Grid.Row="6" Content="Y"></Label>
+                    <TextBox Grid.Column="1" Grid.Row="6" Name="CylEndY" Text="{Binding CylEndY}"></TextBox>
+                    <Label   Grid.Column="0" Grid.Row="7" Content="Z"></Label>
+                    <TextBox Grid.Column="1" Grid.Row="7" Name="CylEndZ" Text="{Binding CylEndZ}"></TextBox>
+                    <TextBlock   Grid.Column="0" Grid.Row="8">Angle <LineBreak></LineBreak> (in degrees)</TextBlock>
+                    <TextBox Grid.Column="1" Grid.Row="8" Name="CylAngle" VerticalAlignment="Top" Height="24" Text="{Binding CylAngle}"></TextBox>
+                </Grid>
+            </TabItem>
+        </TabControl>
+    </ScrollViewer>
 </UserControl>

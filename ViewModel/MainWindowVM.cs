@@ -19,5 +19,11 @@ namespace WpfCollision.ViewModel
             get => _textboxDatasource;
             set { _textboxDatasource = value; OnPropertyChanged(nameof(TextboxDatasource)); }
         }
+        private ParametersViewVM _parametersDatasource;
+        public ParametersViewVM ParametersDatasource
+        {
+            get => _parametersDatasource;
+            set { _parametersDatasource = value; OnPropertyChanged(nameof(_parametersDatasource)); }
+        }
     }
 }

@@ -19,21 +19,32 @@ namespace WpfCollision
     public partial class MainWindow : Window
     {
         CollisionDetectionHandler physicsHandler = new CollisionDetectionHandler();
+        MainWindowVM vm;
         public MainWindow()
         {
             InitializeComponent();
-            this.DataContext = new MainWindowVM();
-            rendererInstance.LoadStaticShapeInViewport(4,1,1);
-            rendererInstance.LoadKynematicCylinderInViewport(2.0, 1);
-            rendererInstance.repositionCylindricOnScene(new System.Windows.Media.Media3D.Point3D(0, 0, 10), new System.Windows.Media.Media3D.Point3D(0, 0, -10));
+            vm = new MainWindowVM();
+            vm.ParametersDatasource = new ParametersViewVM {
+                BoxXDim = 4, BoxYDim = 1, BoxZDim = 1,
+                CylRadius = 2.0, CylHeight = 1,
+                CylStartX = 0, CylStartY = 0, CylStartZ = 10, CylEndX = 0, CylEndY = 0, CylEndZ = -10 };
+            this.DataContext = vm;
             physicsHandler.OnCollisionRegistered += PhysicsHandler_OnCollisionRegistered;
             physicsHandler.initializeSimulation();
-            physicsHandler.InitStaticBoxShape(4f, 1f, 1f);
-            physicsHandler.InitCylindricShape(2.0f, 1f);
-            physicsHandler.simulateMoveCylindrikSingleStep(new System.Numerics.Vector3(0, 0, 10));
+            prepareGraphicalRepresentation();
             rendererInstance.OnCoordinateChanged += RendererInstance_OnCoordinateChanged;
-        }
 
+            physicsHandler.InitStaticBoxShape((float)vm.ParametersDatasource.BoxXDim, (float)vm.ParametersDatasource.BoxYDim, (float)vm.ParametersDatasource.BoxZDim);
+            physicsHandler.InitCylindricShape((float)vm.ParametersDatasource.CylRadius, (float)vm.ParametersDatasource.CylHeight);
+            physicsHandler.simulateMoveCylindrikSingleStep(new System.Numerics.Vector3((float)vm.ParametersDatasource.CylStartX, (float)vm.ParametersDatasource.CylStartY, (float)vm.ParametersDatasource.CylStartZ));
+            
+        }
+        private void prepareGraphicalRepresentation()
+        {
+            rendererInstance.LoadStaticShapeInViewport(vm.ParametersDatasource.BoxXDim, vm.ParametersDatasource.BoxYDim, vm.ParametersDatasource.BoxZDim);
+            rendererInstance.LoadKynematicCylinderInViewport(vm.ParametersDatasource.CylRadius, vm.ParametersDatasource.CylHeight);
+            rendererInstance.repositionCylindricOnScene(new System.Windows.Media.Media3D.Point3D(vm.ParametersDatasource.CylStartX, vm.ParametersDatasource.CylStartY, vm.ParametersDatasource.CylStartZ), new System.Windows.Media.Media3D.Point3D(vm.ParametersDatasource.CylEndX, vm.ParametersDatasource.CylEndY, vm.ParametersDatasource.CylEndZ));
+        }
         private void RendererInstance_OnCoordinateChanged(double x, double y, double Z)
         {
             ((this.DataContext) as MainWindowVM).TextboxDatasource.AppendLine($"Coordinate of cylinder: [ {x} ; {y} ; {Z}]");
@@ -56,6 +67,11 @@ namespace WpfCollision
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
             physicsHandler.FinalizeSimulation();
+        }
+        private void ButtonApply_Click(object sender, RoutedEventArgs e)
+        {
+            prepareGraphicalRepresentation();
+            physicsHandler.assignRadiusLengthToCylindric((float)vm.ParametersDatasource.CylRadius, (float)vm.ParametersDatasource.CylHeight);
         }
     }
 }
