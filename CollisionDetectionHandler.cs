@@ -21,6 +21,7 @@ namespace WpfCollision
         private Simulation simulation;
         private BufferPool pool;
         private BodyHandle cylinderHandle;
+        private StaticHandle boxHandle;
         private NarrowPhaseCallbacks narrowPhaseCallbacks;
        public void SimulationSimple()
         {
@@ -106,8 +107,33 @@ namespace WpfCollision
                 new Vector3(0, 0, 0), // Center of the box
                 boxShapeIndex
             );
-            simulation.Statics.Add(staticDescription);
+            boxHandle = simulation.Statics.Add(staticDescription);
             OnCollisionRegistered?.Invoke($"[{DateTime.Now}] Static box created");
+        }
+        public void AssignDimensionsToBoxShape(float dimX, float dimY, float dimZ)
+        {
+            // at first, save pose
+            var body = simulation.Statics.GetStaticReference(boxHandle);
+            Quaternion savedRotation = body.Pose.Orientation;
+            Vector3 savedPosition = body.Pose.Position;
+            var restoredPose = new RigidPose(
+                savedPosition,
+                savedRotation
+            );
+            // Remove old body
+            simulation.Statics.Remove(boxHandle);
+
+            // Create new shape with updated dimensions and also reuse pose
+            var newBox = new Box(dimX, dimY, dimZ);
+            var newShapeIndex = simulation.Shapes.Add(newBox);
+            var staticDescription = new StaticDescription(
+                restoredPose, // Center of the box
+                newShapeIndex
+            );
+            boxHandle = simulation.Statics.Add(staticDescription);
+
+            
+
         }
         /// <summary>
         /// create kynematic shape of cylindric for collision simulation
@@ -131,7 +157,12 @@ namespace WpfCollision
             ));
             OnCollisionRegistered?.Invoke($"[{DateTime.Now}] Kinematics cylinder created");
         }
-        public void assignRadiusLengthToCylindric(float newRadius, float newLength)
+        /// <summary>
+        /// dimensions of cylindric were changed
+        /// </summary>
+        /// <param name="newRadius"></param>
+        /// <param name="newLength"></param>
+        public void AssignRadiusLengthToCylindric(float newRadius, float newLength)
         {
             
             // at first, save pose
@@ -156,7 +187,7 @@ namespace WpfCollision
                 new CollidableDescription(newShapeIndex, 0.1f),
                 new BodyActivityDescription(-1)
             ));
-
+            OnCollisionRegistered?.Invoke($"[{DateTime.Now}] Kinematics cylinder changes applied");
         }
         /// <summary>
         /// should be called after InitCylindricShape. for consistency reason should not be called when movement is running (nothing bad happen but still)

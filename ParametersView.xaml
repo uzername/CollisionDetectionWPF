@@ -68,7 +68,13 @@
                         <RowDefinition Height="Auto"/>
                         <!-- Z -->
                         <RowDefinition Height="Auto"/>
-                        <!-- angle -->
+                        <!-- Header angle -->
+                        <RowDefinition Height="Auto"/>
+                        <!-- angle X-->
+                        <RowDefinition Height="Auto"/>
+                        <!-- angle Y-->
+                        <RowDefinition Height="Auto"/>
+                        <!-- angle Z-->
                         <RowDefinition Height="Auto"/>
                         <RowDefinition Height="1*"/>
                     </Grid.RowDefinitions>
@@ -86,8 +92,12 @@
                     <TextBox Grid.Column="1" Grid.Row="6" Name="CylEndY" Text="{Binding CylEndY}"></TextBox>
                     <Label   Grid.Column="0" Grid.Row="7" Content="Z"></Label>
                     <TextBox Grid.Column="1" Grid.Row="7" Name="CylEndZ" Text="{Binding CylEndZ}"></TextBox>
-                    <TextBlock   Grid.Column="0" Grid.Row="8">Angle <LineBreak></LineBreak> (in degrees)</TextBlock>
-                    <TextBox Grid.Column="1" Grid.Row="8" Name="CylAngle" VerticalAlignment="Top" Height="24" Text="{Binding CylAngle}"></TextBox>
+                    <Label   Grid.Column="0" Grid.Row="8" Grid.ColumnSpan="2" >Angles (in degrees)</Label>
+                    <Label   Grid.Column="0" Grid.Row="9">Angle X</Label>
+                    <TextBox Grid.Column="1" Grid.Row="9" Name="CylAngleX" VerticalAlignment="Top" Text="{Binding CylAngleX}"></TextBox>
+                    <Label   Grid.Column="0" Grid.Row="10">Angle Y</Label>
+                    <TextBox Grid.Column="1" Grid.Row="10" Name="CylAngleY" VerticalAlignment="Top" Text="{Binding CylAngleY}"></TextBox>
+                    <Label   Grid.Column="0" Grid.Row="11">Angle Z</Label>
                 </Grid>
             </TabItem>
         </TabControl>

@@ -20,7 +20,9 @@ namespace WpfCollision.ViewModel
         private double _CylEndX;
         private double _CylEndY;
         private double _CylEndZ;
-        private double _CylAngle;
+        private double _CylAngleX;
+        private double _CylAngleY;
+        private double _CylAngleZ;
 
         public double BoxXDim
         {
@@ -77,11 +79,20 @@ namespace WpfCollision.ViewModel
             get => _CylEndZ;
             set => SetProperty(ref _CylEndZ, value);
         }
-        public double CylAngle
+        public double CylAngleX
         {
-            get => _CylAngle;
-            set => SetProperty(ref _CylAngle, value);
+            get => _CylAngleX;
+            set => SetProperty(ref _CylAngleX, value);
         }
-
+        public double CylAngleY
+        {
+            get => _CylAngleY;
+            set => SetProperty(ref _CylAngleY, value);
+        }
+        public double CylAngleZ
+        {
+            get => _CylAngleZ;
+            set => SetProperty(ref _CylAngleZ, value);
+        }
     }
 }

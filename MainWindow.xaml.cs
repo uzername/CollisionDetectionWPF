@@ -71,7 +71,9 @@ namespace WpfCollision
         private void ButtonApply_Click(object sender, RoutedEventArgs e)
         {
             prepareGraphicalRepresentation();
-            physicsHandler.assignRadiusLengthToCylindric((float)vm.ParametersDatasource.CylRadius, (float)vm.ParametersDatasource.CylHeight);
+            physicsHandler.AssignRadiusLengthToCylindric((float)vm.ParametersDatasource.CylRadius, (float)vm.ParametersDatasource.CylHeight);
+            physicsHandler.AssignDimensionsToBoxShape((float)vm.ParametersDatasource.BoxXDim, (float)vm.ParametersDatasource.BoxYDim, (float)vm.ParametersDatasource.BoxZDim);
+
         }
     }
 }
