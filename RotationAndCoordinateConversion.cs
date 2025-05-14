@@ -65,7 +65,7 @@ namespace WpfCollision
             return new System.Windows.Media.Media3D.Quaternion(q.X, q.Y, q.Z, q.W);
         }
 
-        private static System.Windows.Media.Media3D.Quaternion QuaternionFromMatrix(Matrix3D m)
+        public static System.Windows.Media.Media3D.Quaternion QuaternionFromMatrix(Matrix3D m)
         {
             // This uses WPF Quaternion from rotation matrix
             return new System.Windows.Media.Media3D.Quaternion(m.M11, m.M21, m.M31, 0); // will be corrected below

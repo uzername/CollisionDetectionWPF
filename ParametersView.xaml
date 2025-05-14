@@ -94,10 +94,11 @@
                     <TextBox Grid.Column="1" Grid.Row="7" Name="CylEndZ" Text="{Binding CylEndZ}"></TextBox>
                     <Label   Grid.Column="0" Grid.Row="8" Grid.ColumnSpan="2" >Angles (in degrees)</Label>
                     <Label   Grid.Column="0" Grid.Row="9">Angle X</Label>
-                    <TextBox Grid.Column="1" Grid.Row="9" Name="CylAngleX" VerticalAlignment="Top" Text="{Binding CylAngleX}"></TextBox>
+                    <TextBox Grid.Column="1" Grid.Row="9" Name="CylAngleX"  Text="{Binding CylAngleX}"></TextBox>
                     <Label   Grid.Column="0" Grid.Row="10">Angle Y</Label>
-                    <TextBox Grid.Column="1" Grid.Row="10" Name="CylAngleY" VerticalAlignment="Top" Text="{Binding CylAngleY}"></TextBox>
+                    <TextBox Grid.Column="1" Grid.Row="10" Name="CylAngleY"  Text="{Binding CylAngleY}"></TextBox>
                     <Label   Grid.Column="0" Grid.Row="11">Angle Z</Label>
+                    <TextBox Grid.Column="1" Grid.Row="11" Name="CylAngleZ"  Text="{Binding CylAngleZ}"></TextBox>
                 </Grid>
             </TabItem>
         </TabControl>

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Diagnostics;
 using System.Numerics;
+using System.Windows.Media.Media3D;
 using BepuPhysics;
 using BepuPhysics.Collidables;
 using BepuPhysics.CollisionDetection;
@@ -23,6 +24,9 @@ namespace WpfCollision
         private BodyHandle cylinderHandle;
         private StaticHandle boxHandle;
         private NarrowPhaseCallbacks narrowPhaseCallbacks;
+        /// <summary>
+        /// unused, kept for reference
+        /// </summary>
        public void SimulationSimple()
         {
             initializeSimulation();
@@ -114,7 +118,7 @@ namespace WpfCollision
         {
             // at first, save pose
             var body = simulation.Statics.GetStaticReference(boxHandle);
-            Quaternion savedRotation = body.Pose.Orientation;
+            System.Numerics.Quaternion savedRotation = body.Pose.Orientation;
             Vector3 savedPosition = body.Pose.Position;
             var restoredPose = new RigidPose(
                 savedPosition,
@@ -158,16 +162,20 @@ namespace WpfCollision
             OnCollisionRegistered?.Invoke($"[{DateTime.Now}] Kinematics cylinder created");
         }
         /// <summary>
-        /// dimensions of cylindric were changed
+        /// dimensions of cylindric were changed. I assign radius and length here and recreate physical representation of cylindric
         /// </summary>
         /// <param name="newRadius"></param>
         /// <param name="newLength"></param>
-        public void AssignRadiusLengthToCylindric(float newRadius, float newLength)
+        /// <param name="rotationXAngleRad"></param>
+        /// <param name="rotationYAngleRad"></param>
+        /// <param name="rotationZAngleRad"></param>
+        public void AssignRadiusLengthAndRotationToCylindric(float newRadius, float newLength, float rotationXAngleRad, float rotationYAngleRad, float rotationZAngleRad)
         {
             
             // at first, save pose
             var body = simulation.Bodies.GetBodyReference(cylinderHandle);
-            Quaternion savedRotation = body.Pose.Orientation;
+            //Quaternion savedRotation = body.Pose.Orientation;
+            System.Numerics.Quaternion savedRotation = System.Numerics.Quaternion.CreateFromYawPitchRoll(rotationZAngleRad, rotationYAngleRad, rotationXAngleRad);
             Vector3 savedPosition = body.Pose.Position;
             var restoredPose = new RigidPose(
                 savedPosition,
@@ -189,6 +197,56 @@ namespace WpfCollision
             ));
             OnCollisionRegistered?.Invoke($"[{DateTime.Now}] Kinematics cylinder changes applied");
         }
+
+        public void AssignRadiusLengthAndRotationToCylindric(float newRadius, float newLength, System.Numerics.Quaternion bepuQuaternion)
+        {
+
+            // at first, save pose
+            var body = simulation.Bodies.GetBodyReference(cylinderHandle);
+            //Quaternion savedRotation = body.Pose.Orientation;
+            Vector3 savedPosition = body.Pose.Position;
+            var restoredPose = new RigidPose(
+                savedPosition,
+                bepuQuaternion
+            );
+
+            // Remove old body
+            simulation.Bodies.Remove(cylinderHandle);
+
+            // Create new shape with updated radius/length
+            var newCylinder = new Cylinder(newRadius, newLength);
+            var newShapeIndex = simulation.Shapes.Add(newCylinder);
+
+            // Create new body with the updated shape and also reuse pose
+            cylinderHandle = simulation.Bodies.Add(BodyDescription.CreateKinematic(
+                restoredPose,
+                new CollidableDescription(newShapeIndex, 0.1f),
+                new BodyActivityDescription(-1)
+            ));
+            OnCollisionRegistered?.Invoke($"[{DateTime.Now}] Kinematics cylinder changes applied");
+        }
+
+        public void AssignRadiusLengthAndRotationToCylindric(float newRadius, float newLength, MatrixTransform3D cylinderTransformm)
+        {
+
+            var restoredPose = HelixToBepuConversion.MatrixTransform3DToRigidPose(cylinderTransformm);
+
+            // Remove old body
+            simulation.Bodies.Remove(cylinderHandle);
+
+            // Create new shape with updated radius/length
+            var newCylinder = new Cylinder(newRadius, newLength);
+            var newShapeIndex = simulation.Shapes.Add(newCylinder);
+
+            // Create new body with the updated shape and also reuse pose
+            cylinderHandle = simulation.Bodies.Add(BodyDescription.CreateKinematic(
+                restoredPose,
+                new CollidableDescription(newShapeIndex, 0.1f),
+                new BodyActivityDescription(-1)
+            ));
+            OnCollisionRegistered?.Invoke($"[{DateTime.Now}] Kinematics cylinder changes applied");
+        }
+
         /// <summary>
         /// should be called after InitCylindricShape. for consistency reason should not be called when movement is running (nothing bad happen but still)
         /// </summary>
@@ -197,7 +255,7 @@ namespace WpfCollision
             var body = simulation.Bodies.GetBodyReference(cylinderHandle);
             body.Pose.Position = new Vector3(XPosition, YPosition, ZPosition);
             // https://simple.wikipedia.org/wiki/Pitch,_yaw,_and_roll#/media/File:6DOF_en.jpg
-            body.Pose.Orientation = Quaternion.CreateFromYawPitchRoll(rotationZAngleRAD, rotationYAngleRAD, rotationXAngleRAD);
+            body.Pose.Orientation = System.Numerics.Quaternion.CreateFromYawPitchRoll(rotationZAngleRAD, rotationYAngleRAD, rotationXAngleRAD);
         }
         struct PoseIntegratorCallbacks : IPoseIntegratorCallbacks
         {

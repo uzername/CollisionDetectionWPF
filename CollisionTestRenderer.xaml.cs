@@ -49,7 +49,7 @@ namespace WpfCollision
         private ModelVisual3D modelVisualCylindric;
         private GeometryModel3D modelCylindric;
 
-        private MatrixTransform3D cylinderTransform;
+        public MatrixTransform3D cylinderTransform { get; private set; }
         public double StartCylinderX
         {
             get;  set;
@@ -85,11 +85,9 @@ namespace WpfCollision
         /// <param name="y"></param>
         /// <param name="z"></param>
         /// <returns></returns>
-        private Matrix3D getTransformMatrix(double angle, double x, double y, double z)
+        private Matrix3D getTransformMatrix( double x, double y, double z)
         {
             Matrix3D mm = new Matrix3D();
-            //rotate first
-            mm.Rotate(new Quaternion(new Vector3D(1, 0, 0), angle));
             //then position
             mm.Translate(new Vector3D(x, y, z));
             return mm;
@@ -115,8 +113,20 @@ namespace WpfCollision
         public void StartMovement()
         {
             if (IsCylinderMoving) return;
-            Matrix3D mm = getTransformMatrix(0, StartCylinderX, StartCylinderY, StartCylinderZ);
-            cylinderTransform.Matrix = mm;
+            // Current position
+            double currentX = cylinderTransform.Matrix.OffsetX;
+            double currentY = cylinderTransform.Matrix.OffsetY;
+            double currentZ = cylinderTransform.Matrix.OffsetZ;
+            double targetX = StartCylinderX;
+            double targetY = StartCylinderY;
+            double targetZ = StartCylinderZ;
+            Vector3D offst = new Vector3D(targetX-currentX, targetY-currentY, targetZ-currentZ);
+            if (offst.X != 0 || offst.Y != 0 || offst.Z != 0)
+            {
+                Matrix3D mmEdited = cylinderTransform.Matrix;
+                mmEdited.Translate(offst);
+                cylinderTransform.Matrix = mmEdited;
+            }
 
             timerStart();
         }
@@ -235,7 +245,7 @@ namespace WpfCollision
 
         }
         /// <summary>
-        /// assign positions to cylindric. rotation is ignored by now
+        /// assign positions to cylindric. rotation is not used here
         /// </summary>
         /// <param name="startCoordinates"></param>
         /// <param name="endCoordinates"></param>
@@ -244,10 +254,36 @@ namespace WpfCollision
             IsCylinderAllocatingDisabled = true;
             StartCylinderX = startCoordinates.X; StartCylinderY = startCoordinates.Y; StartCylinderZ = startCoordinates.Z;
             EndCylinderX = endCoordinates.X; EndCylinderY = endCoordinates.Y; EndCylinderZ = endCoordinates.Z;
-            Matrix3D mm = getTransformMatrix(0, StartCylinderX, StartCylinderY, StartCylinderZ);
+            Matrix3D mm = getTransformMatrix(StartCylinderX, StartCylinderY, StartCylinderZ);
             cylinderTransform.Matrix = mm;
 
             IsCylinderAllocatingDisabled = false;
+        }
+        /// <summary>
+        /// Rotate previously created graphical representation of cylindric in space, 
+        /// supply angleX, angleY, and angleZ in degrees. 
+        /// </summary>
+        /// <param name="angleX">rotation angle in degrees along X</param>
+        /// <param name="angleY">rotation angle in degrees along Y</param>
+        /// <param name="angleZ">rotation angle in degrees along Z</param>
+        public void rotateCylindricOnScene2(double angleX, double angleY, double angleZ)
+        {
+            // Current position
+            double currentX = cylinderTransform.Matrix.OffsetX;
+            double currentY = cylinderTransform.Matrix.OffsetY;
+            double currentZ = cylinderTransform.Matrix.OffsetZ;
+
+            var rotationX = new AxisAngleRotation3D(new Vector3D(1, 0, 0), angleX);
+            var rotationY = new AxisAngleRotation3D(new Vector3D(0, 1, 0), angleY);
+            var rotationZ = new AxisAngleRotation3D(new Vector3D(0, 0, 1), angleZ);
+            var rotateTransform = new Transform3DGroup();
+            rotateTransform.Children.Add(new RotateTransform3D(rotationX));
+            rotateTransform.Children.Add(new RotateTransform3D(rotationY));
+            rotateTransform.Children.Add(new RotateTransform3D(rotationZ));
+            var rotationMatrix = rotateTransform.Value;
+
+            rotationMatrix.Translate(new Vector3D(currentX, currentY, currentZ));
+            cylinderTransform.Matrix = rotationMatrix;
         }
     }
 }

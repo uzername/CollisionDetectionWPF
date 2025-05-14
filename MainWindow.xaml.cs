@@ -44,6 +44,7 @@ namespace WpfCollision
             rendererInstance.LoadStaticShapeInViewport(vm.ParametersDatasource.BoxXDim, vm.ParametersDatasource.BoxYDim, vm.ParametersDatasource.BoxZDim);
             rendererInstance.LoadKynematicCylinderInViewport(vm.ParametersDatasource.CylRadius, vm.ParametersDatasource.CylHeight);
             rendererInstance.repositionCylindricOnScene(new System.Windows.Media.Media3D.Point3D(vm.ParametersDatasource.CylStartX, vm.ParametersDatasource.CylStartY, vm.ParametersDatasource.CylStartZ), new System.Windows.Media.Media3D.Point3D(vm.ParametersDatasource.CylEndX, vm.ParametersDatasource.CylEndY, vm.ParametersDatasource.CylEndZ));
+            rendererInstance.rotateCylindricOnScene2(vm.ParametersDatasource.CylAngleX, vm.ParametersDatasource.CylAngleY, vm.ParametersDatasource.CylAngleZ);
         }
         private void RendererInstance_OnCoordinateChanged(double x, double y, double Z)
         {
@@ -55,7 +56,7 @@ namespace WpfCollision
 
         private void ButtonSimulate_Click(object sender, RoutedEventArgs e)
         {
-            
+            ((this.DataContext) as MainWindowVM).TextboxDatasource.AppendLine($"=== SIMULATION STARTED ===");
             rendererInstance.StartMovement();
         }
 
@@ -71,9 +72,13 @@ namespace WpfCollision
         private void ButtonApply_Click(object sender, RoutedEventArgs e)
         {
             prepareGraphicalRepresentation();
-            physicsHandler.AssignRadiusLengthToCylindric((float)vm.ParametersDatasource.CylRadius, (float)vm.ParametersDatasource.CylHeight);
+            /*
+            physicsHandler.AssignRadiusLengthAndRotationToCylindric((float)vm.ParametersDatasource.CylRadius, (float)vm.ParametersDatasource.CylHeight, 
+                RotationAndCoordinateConversion.HelixToBepu( RotationAndCoordinateConversion.QuaternionFromMatrix( rendererInstance.cylinderTransform.Matrix) ) );
+            */
+            physicsHandler.AssignRadiusLengthAndRotationToCylindric((float)vm.ParametersDatasource.CylRadius, (float)vm.ParametersDatasource.CylHeight, rendererInstance.cylinderTransform);
             physicsHandler.AssignDimensionsToBoxShape((float)vm.ParametersDatasource.BoxXDim, (float)vm.ParametersDatasource.BoxYDim, (float)vm.ParametersDatasource.BoxZDim);
-
+            physicsHandler.simulateMoveCylindrikSingleStep(new System.Numerics.Vector3((float)vm.ParametersDatasource.CylStartX, (float)vm.ParametersDatasource.CylStartY, (float)vm.ParametersDatasource.CylStartZ));
         }
     }
 }
