@@ -23,3 +23,34 @@ BepuPhysics2  |Y         |Z             |Right-handed system        |
 --------------|----------|--------------|---------------------------|
 Helix Toolkit |Z         |Y (or -Y)     | Based on WPF 3D / DirectX |
 
+### Cylinder in Bepu Is Always Aligned to Y-Axis
+In BepuPhysics2, the Cylinder shape (just like Capsule) is defined as being implicitly aligned with the Y-axis. From [Bepu source comments and design]:
+
+The Cylinder shape's height extends along the local Y-axis of the body, and it is not arbitrarily rotatable at the shape level.
+
+So even if you apply rotation to the body, the collision shape itself does not rotate accordingly unless it is transformed properly in local space — but shape-level rotation isn’t directly supported.
+
+### Workaround
+To rotate a cylinder in simulation, you must apply the rotation at the body level, which you're already doing, but due to the nature of the Cylinder primitive, Bepu only supports axis-aligned cylinders.
+
+To simulate a rotated cylinder, consider two options:
+
+#### Option 1: Use a ConvexHull
+
+Instead of using new Cylinder(...), generate a rotated cylinder mesh and convert it to a convex hull:
+
+```
+var vertices = ProceduralGenerator.BuildRotatedCylinder(radius, height, angleX, angleY, angleZ); // Your mesh builder
+var convexHull = new ConvexHull(vertices, bufferPool, out _);
+var shapeIndex = simulation.Shapes.Add(convexHull);
+```
+
+Then, the shape itself is already rotated, and you don’t need to rotate the body — it collides properly at all angles.
+
+#### Option 2: Use a Compound Shape
+
+If the cylinder is small or you want to simulate it precisely:
+
+Build the shape from multiple spheres or capsules arranged in a tilted line (compound shape).
+
+Tedious but effective if convex hull is not performant enough.

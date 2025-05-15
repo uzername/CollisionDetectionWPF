@@ -99,5 +99,34 @@ namespace WpfCollision
 
             return new System.Numerics.Quaternion((float)x, (float)y, (float)z, (float)w);
         }
+
+        /// <summary>
+        /// Converts Euler angles (in radians) from Helix Toolkit (Z-up) to a quaternion suitable for BepuPhysics (Y-up).
+        /// </summary>
+        /// <param name="angleXRad">Rotation around X axis in Helix (remains X in Bepu)</param>
+        /// <param name="angleYRad">Rotation around Y axis in Helix (becomes Z in Bepu)</param>
+        /// <param name="angleZRad">Rotation around Z axis in Helix (becomes Y in Bepu)</param>
+        public static System.Numerics.Quaternion CreateBepuQuaternionFromHelixEulerAngles(
+            float angleXRad,
+            float angleYRad,
+            float angleZRad)
+        {
+            // Map Helix axes to Bepu axes:
+            // Helix X - Bepu X
+            // Helix Y - Bepu Z
+            // Helix Z - Bepu Y
+
+            // Create individual axis-angle quaternions with remapped axes
+            var qx = System.Numerics.Quaternion.CreateFromAxisAngle(Vector3.UnitX, angleXRad);         // X stays X
+            var qz = System.Numerics.Quaternion.CreateFromAxisAngle(Vector3.UnitY, angleZRad);         // Z - Y
+            var qy = System.Numerics.Quaternion.CreateFromAxisAngle(Vector3.UnitZ, angleYRad);         // Y - Z
+
+            // Multiply in desired order: X - Y - Z (Helix logic); Bepu order is right to left
+            var result = System.Numerics.Quaternion.Concatenate(
+                             System.Numerics.Quaternion.Concatenate(qx, qy), qz);
+
+            return result;
+        }
+
     }
 }

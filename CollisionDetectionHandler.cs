@@ -77,6 +77,7 @@ namespace WpfCollision
         {
             var body = simulation.Bodies.GetBodyReference(cylinderHandle);
             body.Pose.Position = targetPosition;
+            OnCollisionRegistered?.Invoke($"Cylindrik moved. Quaternion is: [ {body.Pose.Orientation.X} {body.Pose.Orientation.Y} {body.Pose.Orientation.Z} {body.Pose.Orientation.W} ]");
             //body.Velocity.Linear = new Vector3(0, -3f, 0); //Must have non-zero velocity to trigger contacts!
 
             simulation.Timestep(1f / 60f);
@@ -169,33 +170,42 @@ namespace WpfCollision
         /// <param name="rotationXAngleRad"></param>
         /// <param name="rotationYAngleRad"></param>
         /// <param name="rotationZAngleRad"></param>
-        public void AssignRadiusLengthAndRotationToCylindric(float newRadius, float newLength, float rotationXAngleRad, float rotationYAngleRad, float rotationZAngleRad)
+        public void AssignRadiusLengthAndRotationToCylindric(float newRadius, float newLength,
+                float angleX_HelixRad, // Rotation around X in Helix (remains X)
+                float angleY_HelixRad, // Rotation around Y in Helix ( becomes Z)
+                float angleZ_HelixRad) // Rotation around Z in Helix ( becomes Y)
         {
-            
-            // at first, save pose
-            var body = simulation.Bodies.GetBodyReference(cylinderHandle);
-            //Quaternion savedRotation = body.Pose.Orientation;
-            System.Numerics.Quaternion savedRotation = System.Numerics.Quaternion.CreateFromYawPitchRoll(rotationZAngleRad, rotationYAngleRad, rotationXAngleRad);
-            Vector3 savedPosition = body.Pose.Position;
-            var restoredPose = new RigidPose(
-                savedPosition,
-                savedRotation
-            );
 
-            // Remove old body
+            // Save old position
+            var body = simulation.Bodies.GetBodyReference(cylinderHandle);
+            var savedPosition = body.Pose.Position;
+
+            // Convert Helix Toolkit Z-up Euler angles to Bepu Y-up Quaternion
+            var qx = System.Numerics.Quaternion.CreateFromAxisAngle(Vector3.UnitX, angleX_HelixRad);  // X stays X
+            var qy = System.Numerics.Quaternion.CreateFromAxisAngle(Vector3.UnitZ, angleY_HelixRad);  // Y → Z
+            var qz = System.Numerics.Quaternion.CreateFromAxisAngle(Vector3.UnitY, angleZ_HelixRad);  // Z → Y
+
+            // Apply rotations in ZYX order: X → Y → Z in Helix corresponds to qx * qy * qz
+            var finalRotation = System.Numerics.Quaternion.Concatenate(
+                                    System.Numerics.Quaternion.Concatenate(qx, qy), qz);
+
+            var restoredPose = new RigidPose(savedPosition, finalRotation);
+
+            // Remove old cylinder
             simulation.Bodies.Remove(cylinderHandle);
 
-            // Create new shape with updated radius/length
+            // Create new shape
             var newCylinder = new Cylinder(newRadius, newLength);
             var newShapeIndex = simulation.Shapes.Add(newCylinder);
 
-            // Create new body with the updated shape and also reuse pose
+            // Create new body
             cylinderHandle = simulation.Bodies.Add(BodyDescription.CreateKinematic(
                 restoredPose,
                 new CollidableDescription(newShapeIndex, 0.1f),
                 new BodyActivityDescription(-1)
             ));
-            OnCollisionRegistered?.Invoke($"[{DateTime.Now}] Kinematics cylinder changes applied");
+
+            OnCollisionRegistered?.Invoke($"[{DateTime.Now}] Kinematic cylinder recreated with new dimensions and orientation.");
         }
 
         public void AssignRadiusLengthAndRotationToCylindric(float newRadius, float newLength, System.Numerics.Quaternion bepuQuaternion)

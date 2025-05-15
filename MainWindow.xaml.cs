@@ -76,7 +76,22 @@ namespace WpfCollision
             physicsHandler.AssignRadiusLengthAndRotationToCylindric((float)vm.ParametersDatasource.CylRadius, (float)vm.ParametersDatasource.CylHeight, 
                 RotationAndCoordinateConversion.HelixToBepu( RotationAndCoordinateConversion.QuaternionFromMatrix( rendererInstance.cylinderTransform.Matrix) ) );
             */
-            physicsHandler.AssignRadiusLengthAndRotationToCylindric((float)vm.ParametersDatasource.CylRadius, (float)vm.ParametersDatasource.CylHeight, rendererInstance.cylinderTransform);
+            //physicsHandler.AssignRadiusLengthAndRotationToCylindric((float)vm.ParametersDatasource.CylRadius, (float)vm.ParametersDatasource.CylHeight, rendererInstance.cylinderTransform);
+            physicsHandler.AssignRadiusLengthAndRotationToCylindric((float)vm.ParametersDatasource.CylRadius, (float)vm.ParametersDatasource.CylHeight, 
+                
+                    Single.DegreesToRadians( (float)vm.ParametersDatasource.CylAngleX),
+                    Single.DegreesToRadians( (float)vm.ParametersDatasource.CylAngleY),
+                    Single.DegreesToRadians( (float)vm.ParametersDatasource.CylAngleZ) 
+                    
+                );
+            /*
+            physicsHandler.AssignRadiusLengthAndRotationToCylindric((float)vm.ParametersDatasource.CylRadius, (float)vm.ParametersDatasource.CylHeight,
+            HelixToBepuConversion.CreateBepuQuaternionFromHelixEulerAngles(
+                Single.DegreesToRadians((float)vm.ParametersDatasource.CylAngleX),
+                Single.DegreesToRadians((float)vm.ParametersDatasource.CylAngleY),
+                Single.DegreesToRadians((float)vm.ParametersDatasource.CylAngleZ)
+                    ));
+            */
             physicsHandler.AssignDimensionsToBoxShape((float)vm.ParametersDatasource.BoxXDim, (float)vm.ParametersDatasource.BoxYDim, (float)vm.ParametersDatasource.BoxZDim);
             physicsHandler.simulateMoveCylindrikSingleStep(new System.Numerics.Vector3((float)vm.ParametersDatasource.CylStartX, (float)vm.ParametersDatasource.CylStartY, (float)vm.ParametersDatasource.CylStartZ));
         }
