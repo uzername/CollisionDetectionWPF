@@ -12,7 +12,18 @@ namespace WpfCollision.ViewModel
         public MainWindowVM() {
             TextboxDatasource = new TextBoxLog();
         }
-
+        private bool _allowEditing;
+        public bool AllowEditing
+        {
+            get { return _allowEditing; }
+            set { _allowEditing = value; OnPropertyChanged(nameof(AllowEditing)); }
+        }
+        private bool _pauseOnCollision;
+        public bool PauseOnCollision
+        {
+            get { return _pauseOnCollision; }
+            set { _pauseOnCollision = value; OnPropertyChanged(nameof(PauseOnCollision)); }
+        }
         private TextBoxLog _textboxDatasource;
         public TextBoxLog TextboxDatasource
         {

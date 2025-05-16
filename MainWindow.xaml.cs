@@ -24,6 +24,7 @@ namespace WpfCollision
         {
             InitializeComponent();
             vm = new MainWindowVM();
+            vm.AllowEditing = true;
             vm.ParametersDatasource = new ParametersViewVM {
                 BoxXDim = 4, BoxYDim = 1, BoxZDim = 1,
                 CylRadius = 2.0, CylHeight = 1,
@@ -33,12 +34,19 @@ namespace WpfCollision
             physicsHandler.initializeSimulation();
             prepareGraphicalRepresentation();
             rendererInstance.OnCoordinateChanged += RendererInstance_OnCoordinateChanged;
+            rendererInstance.OnSimulationComplete += RendererInstance_OnSimulationComplete;
 
             physicsHandler.InitStaticBoxShape((float)vm.ParametersDatasource.BoxXDim, (float)vm.ParametersDatasource.BoxYDim, (float)vm.ParametersDatasource.BoxZDim);
             physicsHandler.InitCylindricShape((float)vm.ParametersDatasource.CylRadius, (float)vm.ParametersDatasource.CylHeight);
             physicsHandler.simulateMoveCylindrikSingleStep(new System.Numerics.Vector3((float)vm.ParametersDatasource.CylStartX, (float)vm.ParametersDatasource.CylStartY, (float)vm.ParametersDatasource.CylStartZ));
             
         }
+
+        private void RendererInstance_OnSimulationComplete()
+        {
+            vm.AllowEditing = true;
+        }
+
         private void prepareGraphicalRepresentation()
         {
             rendererInstance.LoadStaticShapeInViewport(vm.ParametersDatasource.BoxXDim, vm.ParametersDatasource.BoxYDim, vm.ParametersDatasource.BoxZDim);
@@ -48,7 +56,7 @@ namespace WpfCollision
         }
         private void RendererInstance_OnCoordinateChanged(double x, double y, double Z)
         {
-            ((this.DataContext) as MainWindowVM).TextboxDatasource.AppendLine($"Coordinate of cylinder: [ {x} ; {y} ; {Z}]");
+            ((this.DataContext) as MainWindowVM).TextboxDatasource.AppendLine($"+++ Coordinate of cylinder: [ {x} ; {y} ; {Z}]");
             // in bepuphysics2 y goes to top , in Helix Toolkit Z goes to top, so I need to swap
             // probably use Vector3_ToBepu from RotationAndCoordinateConversion
             physicsHandler.simulateMoveCylindrikSingleStep(new System.Numerics.Vector3((float)x, (float)Z, (float)y));
@@ -57,6 +65,7 @@ namespace WpfCollision
         private void ButtonSimulate_Click(object sender, RoutedEventArgs e)
         {
             ((this.DataContext) as MainWindowVM).TextboxDatasource.AppendLine($"=== SIMULATION STARTED ===");
+            vm.AllowEditing = false;
             rendererInstance.StartMovement();
         }
 
@@ -92,7 +101,7 @@ namespace WpfCollision
                 Single.DegreesToRadians((float)vm.ParametersDatasource.CylAngleZ)
                     ));
             */
-            physicsHandler.AssignDimensionsToBoxShape((float)vm.ParametersDatasource.BoxXDim, (float)vm.ParametersDatasource.BoxYDim, (float)vm.ParametersDatasource.BoxZDim);
+            physicsHandler.AssignDimensionsToBoxShape((float)vm.ParametersDatasource.BoxXDim, (float)vm.ParametersDatasource.BoxZDim, (float)vm.ParametersDatasource.BoxYDim);
             physicsHandler.simulateMoveCylindrikSingleStep(new System.Numerics.Vector3((float)vm.ParametersDatasource.CylStartX, (float)vm.ParametersDatasource.CylStartY, (float)vm.ParametersDatasource.CylStartZ));
         }
     }

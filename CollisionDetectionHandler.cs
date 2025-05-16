@@ -11,7 +11,12 @@ using BepuUtilities.Memory;
 
 namespace WpfCollision
 {
+    /// <summary>
+    /// used to display something string
+    /// </summary>
+    /// <param name="parameter"></param>
     public delegate void CollisionRegisteredDelegate(string parameter);
+    public delegate void CollisionDetectedReal_Delegate();
     /// <summary>
     /// collision detection happens here. Similar to https://github.com/bepu/bepuphysics2/blob/master/Demos/Demos/SimpleSelfContainedDemo.cs
     /// seems like physics engine has Y axis going to top
@@ -19,6 +24,10 @@ namespace WpfCollision
     public class CollisionDetectionHandler
     {
        public event CollisionRegisteredDelegate OnCollisionRegistered;
+        /// <summary>
+        /// invoked when collision was detected with manifold data and contact points
+        /// </summary>
+        public event CollisionDetectedReal_Delegate OnCollisionDetectedReal;
         private Simulation simulation;
         private BufferPool pool;
         private BodyHandle cylinderHandle;
@@ -302,6 +311,7 @@ namespace WpfCollision
 
             public bool AllowContactGeneration(int workerIndex, CollidableReference a, CollidableReference b, ref float speculativeMargin)
             {
+                speculativeMargin = MathF.Max(speculativeMargin, 0.1f);
                 return true;
             }
 
@@ -327,8 +337,12 @@ namespace WpfCollision
             {
                 if (manifold.Count > 0)
                 {
-                    //Debug.WriteLine($"Collision between two bodies with {manifold.Count} contact(s).");
                     OnCollisionRegistered?.Invoke($"[{DateTime.Now}] Collision between two bodies with {manifold.Count} contact(s).");
+                    for (int i = 0; i < manifold.Count; ++i)
+                    {
+                        Contact contactData; manifold.GetContact(i, out contactData);
+                        OnCollisionRegistered?.Invoke($"Contact {i}: Offset={contactData.Offset}, Depth={contactData.Depth}");
+                    }
                 } else {
                     OnCollisionRegistered?.Invoke($"[{DateTime.Now}] Collision registered but no contact points reported");
                 }

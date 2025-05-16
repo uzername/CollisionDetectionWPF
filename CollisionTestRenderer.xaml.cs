@@ -20,6 +20,7 @@ using System.Windows.Threading;
 namespace WpfCollision
 {
     public delegate void CoordinateChanged_Delegate(double x, double y, double Z);
+    public delegate void SimulationComplete_Delegate();
     /// <summary>
     /// Interaction logic for CollisionTestRenderer.xaml
     /// Inspired by ProfileAndToolUnderAngleRenderer
@@ -38,6 +39,11 @@ namespace WpfCollision
             _timer.Tick += OnTimerTick;
         }
         public event CoordinateChanged_Delegate OnCoordinateChanged;
+        /// <summary>
+        /// movement simulation has been finished
+        /// </summary>
+        public event SimulationComplete_Delegate OnSimulationComplete;
+        
         public bool IsCylinderMoving { get; private set; } = false;
         public bool IsCylinderAllocatingDisabled { get; private set; } = false;
 
@@ -153,6 +159,7 @@ namespace WpfCollision
                 OnCoordinateChanged?.Invoke(_targetPosition.X, _targetPosition.Y, _targetPosition.Z);
                 // Stop movement when there is nowhere to go
                     timerStop();
+                OnSimulationComplete?.Invoke();
                 return;
             }
 
