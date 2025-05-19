@@ -24,6 +24,13 @@ namespace WpfCollision.ViewModel
             get { return _pauseOnCollision; }
             set { _pauseOnCollision = value; OnPropertyChanged(nameof(PauseOnCollision)); }
         }
+
+        private bool _IsPaused;
+        public bool IsPaused
+        {
+            get { return _IsPaused; }
+            set { _IsPaused = value; OnPropertyChanged(nameof(IsPaused)); }
+        }
         private TextBoxLog _textboxDatasource;
         public TextBoxLog TextboxDatasource
         {

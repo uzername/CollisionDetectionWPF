@@ -292,5 +292,15 @@ namespace WpfCollision
             rotationMatrix.Translate(new Vector3D(currentX, currentY, currentZ));
             cylinderTransform.Matrix = rotationMatrix;
         }
+
+        internal void PauseSimulation()
+        {
+            _timer.Stop();
+        }
+
+        internal void ContinueSimulation()
+        {
+            _timer.Start();
+        }
     }
 }

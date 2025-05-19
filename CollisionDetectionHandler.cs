@@ -100,6 +100,10 @@ namespace WpfCollision
             {
                 narrowPhaseCallbacks.OnCollisionRegistered += this.OnCollisionRegistered;
             }
+            if (OnCollisionDetectedReal != null)
+            {
+                narrowPhaseCallbacks.OnCollisionDetectedReal += this.OnCollisionDetectedReal;
+            }
             simulation = Simulation.Create(pool, narrowPhaseCallbacks, new PoseIntegratorCallbacks(), new SolveDescription(1, 1));
             OnCollisionRegistered?.Invoke($"[{DateTime.Now}] simulation initialized");
         }
@@ -305,6 +309,7 @@ namespace WpfCollision
         struct NarrowPhaseCallbacks : INarrowPhaseCallbacks
         {
             public event CollisionRegisteredDelegate OnCollisionRegistered;
+            public event CollisionDetectedReal_Delegate OnCollisionDetectedReal;
             public void Initialize(Simulation simulation) { }
 
             public void Dispose() { }
@@ -338,6 +343,7 @@ namespace WpfCollision
                 if (manifold.Count > 0)
                 {
                     OnCollisionRegistered?.Invoke($"[{DateTime.Now}] Collision between two bodies with {manifold.Count} contact(s).");
+                    OnCollisionDetectedReal?.Invoke();
                     for (int i = 0; i < manifold.Count; ++i)
                     {
                         Contact contactData; manifold.GetContact(i, out contactData);

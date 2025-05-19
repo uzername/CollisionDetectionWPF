@@ -30,7 +30,8 @@
         </Grid.ColumnDefinitions>
         <StackPanel Orientation="Horizontal" Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="3">
             <Button Content="Start Collision detection" Margin="2" Name="ButtonSimulate" Click="ButtonSimulate_Click" IsEnabled="{Binding Path=AllowEditing}"/>
-            <CheckBox Name="CheckBoxPauseOnCollision" Content="Pause on collision detected" IsChecked="{Binding Path=PauseOnCollision}"></CheckBox>
+            <CheckBox Content="Pause on collision" Name="CheckBoxPauseOnCollision" IsChecked="{Binding Path=PauseOnCollision}"></CheckBox>
+            <Button Content="Continue" Name="ContinueOnCollision" Click="ContinueOnCollision_Click" IsEnabled="{Binding Path=IsPaused}"></Button>
         </StackPanel>
         <Grid Grid.Row="1" Grid.Column="0">
             <Grid.ColumnDefinitions>

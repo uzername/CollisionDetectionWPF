@@ -31,6 +31,7 @@ namespace WpfCollision
                 CylStartX = 0, CylStartY = 0, CylStartZ = 10, CylEndX = 0, CylEndY = 0, CylEndZ = -10 };
             this.DataContext = vm;
             physicsHandler.OnCollisionRegistered += PhysicsHandler_OnCollisionRegistered;
+            physicsHandler.OnCollisionDetectedReal += PhysicsHandler_OnCollisionDetectedReal;
             physicsHandler.initializeSimulation();
             prepareGraphicalRepresentation();
             rendererInstance.OnCoordinateChanged += RendererInstance_OnCoordinateChanged;
@@ -40,6 +41,26 @@ namespace WpfCollision
             physicsHandler.InitCylindricShape((float)vm.ParametersDatasource.CylRadius, (float)vm.ParametersDatasource.CylHeight);
             physicsHandler.simulateMoveCylindrikSingleStep(new System.Numerics.Vector3((float)vm.ParametersDatasource.CylStartX, (float)vm.ParametersDatasource.CylStartY, (float)vm.ParametersDatasource.CylStartZ));
             
+        }
+        /// <summary>
+        /// pause on collision detected
+        /// </summary>
+        private void PhysicsHandler_OnCollisionDetectedReal()
+        {
+            if ((vm.PauseOnCollision)&&(vm.IsPaused==false)) {
+                rendererInstance.PauseSimulation();
+                vm.IsPaused = true;
+            }
+            ((this.DataContext) as MainWindowVM).TextboxDatasource.AppendLine($"... Simulation paused ...");
+        }
+        private void ContinueOnCollision_Click(object sender, RoutedEventArgs e)
+        {
+            if ((vm.IsPaused))
+            {
+                rendererInstance.ContinueSimulation();
+                vm.IsPaused = false;
+            }
+            ((this.DataContext) as MainWindowVM).TextboxDatasource.AppendLine($"... Simulation continues ...");
         }
 
         private void RendererInstance_OnSimulationComplete()
@@ -104,5 +125,7 @@ namespace WpfCollision
             physicsHandler.AssignDimensionsToBoxShape((float)vm.ParametersDatasource.BoxXDim, (float)vm.ParametersDatasource.BoxZDim, (float)vm.ParametersDatasource.BoxYDim);
             physicsHandler.simulateMoveCylindrikSingleStep(new System.Numerics.Vector3((float)vm.ParametersDatasource.CylStartX, (float)vm.ParametersDatasource.CylStartY, (float)vm.ParametersDatasource.CylStartZ));
         }
+
+        
     }
 }
