@@ -33,6 +33,7 @@ namespace WpfCollision
         private BodyHandle cylinderHandle;
         private StaticHandle boxHandle;
         private NarrowPhaseCallbacks narrowPhaseCallbacks;
+        public const float COLLISION_PRECISION = 0.01f;
         /// <summary>
         /// unused, kept for reference
         /// </summary>
@@ -170,7 +171,7 @@ namespace WpfCollision
             // You could also force the kinematic to always be awake by settings its sleeping velocity threshold to a negative value in BodyActivityDescription.
             cylinderHandle = simulation.Bodies.Add(BodyDescription.CreateKinematic(
                 pose,
-                new CollidableDescription(cylinderShapeIndex, 0.1f),
+                new CollidableDescription(cylinderShapeIndex, COLLISION_PRECISION),
                 new BodyActivityDescription(-1)
             ));
             OnCollisionRegistered?.Invoke($"[{DateTime.Now}] Kinematics cylinder created");
@@ -214,7 +215,7 @@ namespace WpfCollision
             // Create new body
             cylinderHandle = simulation.Bodies.Add(BodyDescription.CreateKinematic(
                 restoredPose,
-                new CollidableDescription(newShapeIndex, 0.1f),
+                new CollidableDescription(newShapeIndex, COLLISION_PRECISION),
                 new BodyActivityDescription(-1)
             ));
 
@@ -243,7 +244,7 @@ namespace WpfCollision
             // Create new body with the updated shape and also reuse pose
             cylinderHandle = simulation.Bodies.Add(BodyDescription.CreateKinematic(
                 restoredPose,
-                new CollidableDescription(newShapeIndex, 0.1f),
+                new CollidableDescription(newShapeIndex, COLLISION_PRECISION),
                 new BodyActivityDescription(-1)
             ));
             OnCollisionRegistered?.Invoke($"[{DateTime.Now}] Kinematics cylinder changes applied");
@@ -264,7 +265,7 @@ namespace WpfCollision
             // Create new body with the updated shape and also reuse pose
             cylinderHandle = simulation.Bodies.Add(BodyDescription.CreateKinematic(
                 restoredPose,
-                new CollidableDescription(newShapeIndex, 0.1f),
+                new CollidableDescription(newShapeIndex, COLLISION_PRECISION),
                 new BodyActivityDescription(-1)
             ));
             OnCollisionRegistered?.Invoke($"[{DateTime.Now}] Kinematics cylinder changes applied");
@@ -316,7 +317,7 @@ namespace WpfCollision
 
             public bool AllowContactGeneration(int workerIndex, CollidableReference a, CollidableReference b, ref float speculativeMargin)
             {
-                speculativeMargin = MathF.Max(speculativeMargin, 0.1f);
+                speculativeMargin = MathF.Max(speculativeMargin, COLLISION_PRECISION);
                 return true;
             }
 
@@ -342,12 +343,19 @@ namespace WpfCollision
             {
                 if (manifold.Count > 0)
                 {
+
                     OnCollisionRegistered?.Invoke($"[{DateTime.Now}] Collision between two bodies with {manifold.Count} contact(s).");
-                    OnCollisionDetectedReal?.Invoke();
+                    bool collisionDetectedReal = false;
                     for (int i = 0; i < manifold.Count; ++i)
                     {
                         Contact contactData; manifold.GetContact(i, out contactData);
-                        OnCollisionRegistered?.Invoke($"Contact {i}: Offset={contactData.Offset}, Depth={contactData.Depth}");
+                        if (contactData.Depth >= 0f)  {
+                            OnCollisionRegistered?.Invoke($"Contact {i}: Offset={contactData.Offset}, Depth={contactData.Depth} . Real Contact");
+                            collisionDetectedReal = true;
+                        }  else  {
+                            OnCollisionRegistered?.Invoke($"Contact {i}: Offset={contactData.Offset}, Depth={contactData.Depth} . Speculative Contact - may e collision in future");
+                        }
+                        if (collisionDetectedReal) OnCollisionDetectedReal?.Invoke();
                     }
                 } else {
                     OnCollisionRegistered?.Invoke($"[{DateTime.Now}] Collision registered but no contact points reported");
